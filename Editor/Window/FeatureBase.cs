@@ -12,11 +12,13 @@ namespace Unifred
 		public virtual string GetGuiSkinPrefabPath() {return string.Empty;}
 		public virtual bool IsMultipleSelect() {return false;}
 		public virtual Vector2 GetWindowSize() {return new Vector2(600, 400);}
+		public virtual Color GetNormalRowColor() {return Config.NORMAL_ROW_COLOR;}
+		public virtual Color GetSelectedRowColor() {return Config.SELECTED_ROW_COLOR;}
 		public virtual void OnDestroy() {}
 		public virtual void OnInit() {}
 
 		public abstract IEnumerable<T> UpdateCandidate(string word);
-		public abstract void Draw(string word, IEnumerable<T> obj_list, IEnumerable<IntRange> selected_list, int offset, int count);
+		public abstract void Draw(string word, T obj, bool is_selected);
 		public abstract void Select(string search_word, IEnumerable<T> obj_list);
 		public abstract float GetRowHeight();
 		#endregion

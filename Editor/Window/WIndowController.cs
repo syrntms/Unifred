@@ -22,6 +22,9 @@ namespace Unifred
 		private GUIStyle scrollbarHorizontal;
 		private GUIStyle scrollbarVertical;
 
+		private GUIStyle normalRowGuiStyle;
+		private GUIStyle selectedRowGuiStyle;
+
 		protected static void ShowWindow(UnifredFeatureBase<T> instance, string input)
 		{
 			UnifredWindowController<T> controller = new UnifredWindowController<T>();
@@ -40,7 +43,8 @@ namespace Unifred
 
 		public void OnDestroy()
 		{
-			feature.OnDestroy();
+			GameObject.DestroyImmediate(normalRowGuiStyle.normal.background);
+			GameObject.DestroyImmediate(selectedRowGuiStyle.normal.background);
 		}
 
 		public void OnGUI()
@@ -342,7 +346,7 @@ namespace Unifred
         }
 
 		/// <summary>
-		/// display candidate list
+		/// display candidate area in editor window 
 		/// </summary>
 		private void _DisplayCandidate()
 		{
@@ -366,10 +370,32 @@ namespace Unifred
 			float rest = (candidateList.Count() - count + 1) * row_height - scrollPosition.y;
 	
 			GUILayout.Space(scrollPosition.y);
-			feature.Draw(searchWord, candidateList, selectedList, offset, count);
+
+			_DisplayEachCandidate(searchWord, offset, count);
+
 			GUILayout.Space(rest);
 
 			EditorGUILayout.EndScrollView();
+		}
+
+		/// <summary>
+		/// disp each element of candidate list with feature base instance.
+		/// </summary>
+		/// <param name="word">Word.</param>
+		/// <param name="offset">Offset.</param>
+		/// <param name="count">Count.</param>
+		private void _DisplayEachCandidate(string word, int offset, int count)
+		{
+			IEnumerable<int> uniq_selected_list = IntRange.Split(selectedList);
+			for (int i = offset ; i < offset + count ; ++i) {
+				bool is_selected = uniq_selected_list.Contains(i);
+				GUIStyle style = (is_selected)? selectedRowGuiStyle:normalRowGuiStyle;
+
+				T candidate = candidateList.ElementAt(i);
+	            GUILayout.BeginHorizontal(style);
+				feature.Draw(word, candidate, is_selected);
+	            GUILayout.EndHorizontal();
+			}
 		}
 
 		private Vector2 _CulcScrollPosition()
@@ -476,6 +502,13 @@ namespace Unifred
 			selectedList.Clear();
 			this.feature = instance;
 			instance.OnInit();
+
+			normalRowGuiStyle = new GUIStyle {
+				normal = {background = TextureUtility.MakeSolidTexture(instance.GetNormalRowColor()),}
+			};
+			selectedRowGuiStyle = new GUIStyle {
+				normal = { background = TextureUtility.MakeSolidTexture(instance.GetSelectedRowColor())},
+			};
 		}
 	}
 }

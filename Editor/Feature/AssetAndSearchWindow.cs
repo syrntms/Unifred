@@ -39,29 +39,10 @@ namespace Unifred
 		//about icon
 		private static GUIStyle iconGuiStyle = new GUIStyle {};
 
-		//set backgroudn color only
-		private static GUIStyle defaultRowGuiStyle;
-
-		//set backgroudn color only
-		private static GUIStyle selectedRowGuiStyle;
-
 		#region impl
 		public override void OnInit()
 		{
-			defaultRowGuiStyle = new GUIStyle {
-				normal = {background = TextureUtility.MakeSolidTexture(Color.clear),}
-			};
-			selectedRowGuiStyle = new GUIStyle {
-				normal = { background = TextureUtility.MakeSolidTexture(Color.magenta + Color.gray * 1.25f),},
-			};
-
 			iconGuiStyle.fixedWidth = iconGuiStyle.fixedHeight = GetRowHeight();
-		}
-
-		public override void OnDestroy()
-		{
-			GameObject.DestroyImmediate(defaultRowGuiStyle.normal.background);
-			GameObject.DestroyImmediate(selectedRowGuiStyle.normal.background);
 		}
 
 		public override string GetDescription()
@@ -111,24 +92,12 @@ namespace Unifred
 
 		public override void Draw(
 			string word,
-			IEnumerable<AssetAndSearchObject> result_list,
-			IEnumerable<IntRange> selected_list,
-			int offset,
-			int count
+			AssetAndSearchObject candidate,
+			bool is_selected
 		) {
-			IEnumerable<int> uniq_selected_list = IntRange.Split(selected_list);
-			for (int i = offset ; i < offset + count ; ++i) {
-				bool is_selected = uniq_selected_list.Any((index) => {return index == i;});
-				GUIStyle style = (is_selected)? selectedRowGuiStyle:defaultRowGuiStyle;
-
-				AssetAndSearchObject result = result_list.ElementAt(i);
-
-				Texture icon = UnityEditorInternal.InternalEditorUtility.GetIconForFile(result.path);
-	            GUILayout.BeginHorizontal(style);
-				GUILayout.Box(icon, iconGuiStyle);
-	            GUILayout.Label(result.path, textGuiStyle);
-	            GUILayout.EndHorizontal();
-			}
+			Texture icon = UnityEditorInternal.InternalEditorUtility.GetIconForFile(candidate.path);
+			GUILayout.Box(icon, iconGuiStyle);
+            GUILayout.Label(candidate.path, textGuiStyle);
 		}
 
 		public override void Select(string word, IEnumerable<AssetAndSearchObject> result_list)

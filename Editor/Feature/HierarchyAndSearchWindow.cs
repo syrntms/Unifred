@@ -32,12 +32,6 @@ namespace Unifred
 			normal = { textColor = EditorStyles.label.normal.textColor }
 		};
 
-		//set backgroudn color only
-		private static GUIStyle defaultRowGuiStyle;
-
-		//set backgroudn color only
-		private static GUIStyle selectedRowGuiStyle;
-
 		public override string GetDescription()
 		{
 			return "input gameobject name you want <color=yellow> AND </color> search";
@@ -46,22 +40,6 @@ namespace Unifred
 		public override bool IsMultipleSelect()
 		{
 			return true;
-		}
-
-		public override void OnInit()
-		{
-			defaultRowGuiStyle = new GUIStyle {
-				normal = {background = TextureUtility.MakeSolidTexture(Color.clear),}
-			};
-			selectedRowGuiStyle = new GUIStyle {
-				normal = { background = TextureUtility.MakeSolidTexture(Color.magenta + Color.gray * 1.25f),},
-			};
-		}
-
-		public override void OnDestroy()
-		{
-			GameObject.DestroyImmediate(defaultRowGuiStyle.normal.background);
-			GameObject.DestroyImmediate(selectedRowGuiStyle.normal.background);
 		}
 
 		public override IEnumerable<HierarchyAndSearchObject> UpdateCandidate(string word)
@@ -95,22 +73,10 @@ namespace Unifred
 
 		public override void Draw(
 			string word,
-			IEnumerable<HierarchyAndSearchObject> result_list,
-			IEnumerable<IntRange> selected_list,
-			int offset,
-			int count
+			HierarchyAndSearchObject candidate,
+			bool is_selected
 		) {
-
-			IEnumerable<int> uniq_selected_list = IntRange.Split(selected_list);
-
-			for (int i = offset ; i < offset + count ; ++i) {
-				bool is_selected = uniq_selected_list.Any((index) => {return index == i;});
-				GUIStyle style = (is_selected)? selectedRowGuiStyle:defaultRowGuiStyle;
-				HierarchyAndSearchObject result = result_list.ElementAt(i);
-	            GUILayout.BeginHorizontal(style);
-	            GUILayout.Label(result.name, textGuiStyle);
-	            GUILayout.EndHorizontal();
-			}
+            GUILayout.Label(candidate.name, textGuiStyle);
 		}
 
 		public override void Select(string word, IEnumerable<HierarchyAndSearchObject> result_list)

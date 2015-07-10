@@ -30,18 +30,6 @@ namespace Unifred
 			normal = { textColor = EditorStyles.label.normal.textColor,},
 		};
 
-		//set backgroudn color only
-		private static GUIStyle defaultRowGuiStyle;
-
-		//set backgroudn color only
-		private static GUIStyle selectedRowGuiStyle;
-
-		public override void OnDestroy()
-		{
-			GameObject.DestroyImmediate(defaultRowGuiStyle.normal.background);
-			GameObject.DestroyImmediate(selectedRowGuiStyle.normal.background);
-		}
-
 		public static void SetList(IEnumerable<MethodListObject> list)
 		{
 			MethodCall.list.Clear();
@@ -65,16 +53,6 @@ namespace Unifred
 			return false;
 		}
 
-		public override void OnInit()
-		{
-			defaultRowGuiStyle = new GUIStyle {
-				normal = {background = TextureUtility.MakeSolidTexture(Color.clear),}
-			};
-			selectedRowGuiStyle = new GUIStyle {
-				normal = { background = TextureUtility.MakeSolidTexture(Color.magenta + Color.gray * 1.25f),},
-			};
-		}
-
 		public override IEnumerable<MethodCallObject> UpdateCandidate(string word)
 		{
 			return list;
@@ -82,47 +60,34 @@ namespace Unifred
 
 		public override void Draw(
 			string word,
-			IEnumerable<MethodCallObject> result_list,
-			IEnumerable<IntRange> selected_list,
-			int offset,
-			int count
+			MethodCallObject candidate,
+			bool is_selected
 		) {
 
-			IEnumerable<int> uniq_selected_list = IntRange.Split(selected_list);
-
 			int current_param_index = word.Count((c) => {return c == ',';});
+			var paramaters = candidate.method.GetParameters();
+			var param_desc = "(";
+			int param_index = 0;
+			foreach (var param in paramaters) {
 
-			for (int i = offset ; i < offset + count ; ++i) {
-				bool is_selected = uniq_selected_list.Any((index) => {return index == i;});
-				GUIStyle style = (is_selected)? selectedRowGuiStyle:defaultRowGuiStyle;
-				MethodCallObject result = list.ElementAt(i);
+				var type_name = param.ParameterType.ToString();
+				var last_namespace_index = type_name.LastIndexOf('.');
+				var type_name_without_namespace = type_name.Substring(last_namespace_index + 1);
 
-				var paramaters = result.method.GetParameters();
-				var param_desc = "(";
-				int param_index = 0;
-				foreach (var param in paramaters) {
+				string open_tag  = (param_index == current_param_index)? "<color=yellow>":"";
+				string close_tag = (param_index == current_param_index)? "</color>":"";
+				param_desc += open_tag + type_name_without_namespace + close_tag;
 
-					var type_name = param.ParameterType.ToString();
-					var last_namespace_index = type_name.LastIndexOf('.');
-					var type_name_without_namespace = type_name.Substring(last_namespace_index + 1);
+				param_index++;
 
-					string open_tag  = (param_index == current_param_index)? "<color=yellow>":"";
-					string close_tag = (param_index == current_param_index)? "</color>":"";
-					param_desc += open_tag + type_name_without_namespace + close_tag;
-
-					param_index++;
-
-					bool is_remain = param_index < paramaters.Count();
-					if (is_remain) {
-						param_desc += ",";
-					}
+				bool is_remain = param_index < paramaters.Count();
+				if (is_remain) {
+					param_desc += ",";
 				}
-				param_desc += ")";
-
-	            GUILayout.BeginHorizontal(style);
-	            GUILayout.Label(result.name + param_desc, textGuiStyle);
-	            GUILayout.EndHorizontal();
 			}
+			param_desc += ")";
+
+            GUILayout.Label(candidate.name + param_desc, textGuiStyle);
 		}
 
 		public override void Select(string word, IEnumerable<MethodCallObject> result_list)
