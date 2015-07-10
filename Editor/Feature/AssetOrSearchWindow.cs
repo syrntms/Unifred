@@ -153,6 +153,7 @@ namespace Unifred
 				EditorApplication.ExecuteMenuItem("Window/Project");
 			    EditorUtility.FocusProjectWindow();
 			}
+			_SaveHistory("AssetOrSearch", word);
 		}
 
 		public override float GetRowHeight()

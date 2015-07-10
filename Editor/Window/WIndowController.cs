@@ -82,9 +82,9 @@ namespace Unifred
 
 			_DisplaySearchTextField();
 
-			_DisplayCandidate();
-
 			_UpdateCandidate();
+
+			_DisplayCandidate();
 
 			prevSearchWord = searchWord;
 		}

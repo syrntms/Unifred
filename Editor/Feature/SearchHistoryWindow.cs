@@ -3,7 +3,6 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using Unifred.Utility;
 
 namespace Unifred.Feature
 {
@@ -62,11 +61,29 @@ namespace Unifred.Feature
 
 		private IEnumerable<SearchHistoryObject> _GetAllHistory()
 		{
-			string encoded = EditorUserSettings.GetConfigValue("SearchHistory");
-			if (string.IsNullOrEmpty(encoded)) {
-				return new List<SearchHistoryObject>();
+			var histories = _GetHistory();
+			return histories.Select(
+				history => new SearchHistoryObject() {
+					mode	= _GetModeFromHistoryKey(history.Key),
+					input	= history.Value
+				}
+			);
+		}
+
+		private SearchHistoryObject.SearchMode _GetModeFromHistoryKey(string key) 
+		{
+			switch (key) {
+			case "AssetAndSearch":
+				return SearchHistoryObject.SearchMode.AssetAndSearch;
+			case "AssetOrSearch":
+				return SearchHistoryObject.SearchMode.AssetOrSearch;
+			case "HierarchyAndSearch":
+				return SearchHistoryObject.SearchMode.HierarchyAndSearch;
+			case "HierarchyOrSearch":
+				return SearchHistoryObject.SearchMode.HierarchyOrSearch;
+			default:
+				throw new Exception("error history mode");
 			}
-			return SerializeUtility.DeserializeObject<List<SearchHistoryObject>>(encoded);
 		}
 
 		public override IEnumerable<SearchHistoryObject> UpdateCandidate(string input)
@@ -75,6 +92,7 @@ namespace Unifred.Feature
             if (string.IsNullOrEmpty(input)) {
                 return result;
 			}
+
 			var words = input.Split(new char[] {' '}, StringSplitOptions.RemoveEmptyEntries);
 
 			return result.Where(
@@ -129,22 +147,22 @@ namespace Unifred.Feature
 			switch (result.mode) {
 			case SearchHistoryObject.SearchMode.AssetOrSearch:
 				EditorApplication.delayCall += () => {
-					AssetOrSearchWindow.SearchFromAsset();
+					AssetOrSearchWindow.SearchFromAsset(result.input);
 				};
 				break;
 			case SearchHistoryObject.SearchMode.AssetAndSearch:
 				EditorApplication.delayCall += () => {
-					AssetAndSearchWindow.SearchFromAsset();
+					AssetAndSearchWindow.SearchFromAsset(result.input);
 				};
 				break;
 			case SearchHistoryObject.SearchMode.HierarchyOrSearch:
 				EditorApplication.delayCall += () => {
-					HierarchyOrSearchWindow.SearchFromHierarchy();
+					HierarchyOrSearchWindow.SearchFromHierarchy(result.input);
 				};
 				break;
 			case SearchHistoryObject.SearchMode.HierarchyAndSearch:
 				EditorApplication.delayCall += () => {
-					HierarchyAndSearchWindow.SearchFromHierarchy();
+					HierarchyAndSearchWindow.SearchFromHierarchy(result.input);
 				};
 				break;
 			}

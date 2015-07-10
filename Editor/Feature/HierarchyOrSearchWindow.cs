@@ -121,6 +121,7 @@ namespace Unifred
 			}
 			Selection.objects = result_list.Select((t) => {return t.target;}).Cast<GameObject>().ToArray();
 			EditorApplication.ExecuteMenuItem("Window/Hierarchy");
+			_SaveHistory("HierarchyOrSearch", word);
 		}
 
 		public override float GetRowHeight()

@@ -2,7 +2,7 @@
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
-namespace Unifred.Utility
+namespace Unifred
 {
 
 	//original is from http://stackoverflow.com/questions/10392268/serialize-deserialze-to-a-string-c-sharp
