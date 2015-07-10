@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
@@ -7,17 +7,26 @@ using UnityEngine;
 
 namespace Unifred
 {
-	public class MethodListWindow : UnifredWindow<MethodListObject> {
+	public class MethodListWindow : UnifredWindowController<MethodListObject>
+	{
 
 		[MenuItem("Unifred/MethodList %y")]
-		public static void SearchFromSelection() {
-			ShowWindow(new MethodList());
+		public static void SearchFromSelection()
+		{
+			ShowWindow(new MethodList(), string.Empty);
+		}
+
+		public static void SearchFromSelection(string initial_word)
+		{
+			ShowWindow(new MethodList(), initial_word);
 		}
 	}
 
-	public class MethodList : IUnifred<MethodListObject> {
+	public class MethodList : UnifredFeatureBase<MethodListObject>
+	{
 
-		private static GUIStyle textGuiStyle = new GUIStyle {
+		private static GUIStyle textGuiStyle = new GUIStyle
+		{
 			richText = true,
 			fontSize = 12,
 			margin = new RectOffset(5, 5, 5, 5),
@@ -31,29 +40,35 @@ namespace Unifred
 		//set backgroudn color only
 		private static GUIStyle selectedRowGuiStyle;
 
-		public override void OnInit() {
+		public override void OnInit()
+		{
 			defaultRowGuiStyle = new GUIStyle {
-				normal = {background = Util.MakeSolidTexture(Color.clear),}
+				normal = {background = TextureUtility.MakeSolidTexture(Color.clear),}
 			};
 			selectedRowGuiStyle = new GUIStyle {
-				normal = { background = Util.MakeSolidTexture(Color.magenta + Color.gray * 1.25f),},
+				normal = { background = TextureUtility.MakeSolidTexture(Color.magenta + Color.gray * 1.25f),},
 			};
 		}
 
-		public override void OnDestroy() {
-			_DestroyStyle();
+		public override void OnDestroy()
+		{
+			GameObject.DestroyImmediate(defaultRowGuiStyle.normal.background);
+			GameObject.DestroyImmediate(selectedRowGuiStyle.normal.background);
 		}
 
-		public override string GetDescription() {
+		public override string GetDescription()
+		{
 			bool is_selected = Selection.gameObjects.Count() > 0;
 			return is_selected? "input method name":"<color=red> select gameobject</color>";
 		}
 
-		public override bool IsMultipleSelect() {
+		public override bool IsMultipleSelect()
+		{
 			return true;
 		}
 
-		public override IEnumerable<MethodListObject> UpdateCandidate(string word) {
+		public override IEnumerable<MethodListObject> UpdateCandidate(string word)
+		{
 			List<MethodListObject> result = new List<MethodListObject>();
 
             if (string.IsNullOrEmpty(word)) {
@@ -117,24 +132,22 @@ namespace Unifred
 			}
 		}
 
-		public override void Select(string word, IEnumerable<MethodListObject> result_list) {
+		public override void Select(string word, IEnumerable<MethodListObject> result_list)
+		{
 			EditorApplication.delayCall += () => {
 				MethodCallWindow.ShowMethod(result_list);
 			};
 		}
 
-		public override float GetRowHeight() {
+		public override float GetRowHeight()
+		{
 			return textGuiStyle.CalcSize(new GUIContent("sample")).y
 				+ textGuiStyle.margin.bottom + textGuiStyle.margin.top;
 		}
-
-		private void _DestroyStyle() {
-			GameObject.DestroyImmediate(defaultRowGuiStyle.normal.background);
-			GameObject.DestroyImmediate(selectedRowGuiStyle.normal.background);
-		}
 	}
 
-	public class MethodListObject {
+	public class MethodListObject
+	{
 		public string name;
 		public GameObject target;
 		public Component component;

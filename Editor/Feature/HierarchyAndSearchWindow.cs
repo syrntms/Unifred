@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEditor;
@@ -7,14 +7,22 @@ using UnityEngine;
 namespace Unifred
 {
 
-	public class HierarchyAndSearchWindow : UnifredWindow<HierarchyAndSearchObject>{
+	public class HierarchyAndSearchWindow : UnifredWindowController<HierarchyAndSearchObject>
+	{
 		[MenuItem("Unifred/SearchHierarchy %g")]
-		public static void SearchFromHierarchy() {
-			ShowWindow(new HierarchyAndSearch());
+		public static void SearchFromHierarchy()
+		{
+			ShowWindow(new HierarchyAndSearch(), string.Empty);
+		}
+
+		public static void SearchFromHierarchy(string initial_word)
+		{
+			ShowWindow(new HierarchyAndSearch(), initial_word);
 		}
 	}
 
-	public class HierarchyAndSearch : IUnifred<HierarchyAndSearchObject> {
+	public class HierarchyAndSearch : UnifredFeatureBase<HierarchyAndSearchObject>
+	{
 
 		private static GUIStyle textGuiStyle = new GUIStyle {
 			richText = true,
@@ -30,28 +38,34 @@ namespace Unifred
 		//set backgroudn color only
 		private static GUIStyle selectedRowGuiStyle;
 
-		public override string GetDescription() {
+		public override string GetDescription()
+		{
 			return "input gameobject name you want <color=yellow> AND </color> search";
 		}
 
-		public override bool IsMultipleSelect() {
+		public override bool IsMultipleSelect()
+		{
 			return true;
 		}
 
-		public override void OnInit() {
+		public override void OnInit()
+		{
 			defaultRowGuiStyle = new GUIStyle {
-				normal = {background = Util.MakeSolidTexture(Color.clear),}
+				normal = {background = TextureUtility.MakeSolidTexture(Color.clear),}
 			};
 			selectedRowGuiStyle = new GUIStyle {
-				normal = { background = Util.MakeSolidTexture(Color.magenta + Color.gray * 1.25f),},
+				normal = { background = TextureUtility.MakeSolidTexture(Color.magenta + Color.gray * 1.25f),},
 			};
 		}
 
-		public override void OnDestroy() {
-			_DestroyStyle();
+		public override void OnDestroy()
+		{
+			GameObject.DestroyImmediate(defaultRowGuiStyle.normal.background);
+			GameObject.DestroyImmediate(selectedRowGuiStyle.normal.background);
 		}
 
-		public override IEnumerable<HierarchyAndSearchObject> UpdateCandidate(string word) {
+		public override IEnumerable<HierarchyAndSearchObject> UpdateCandidate(string word)
+		{
 			List<HierarchyAndSearchObject> result = new List<HierarchyAndSearchObject>();
             if (string.IsNullOrEmpty(word)) {
                 return result;
@@ -99,7 +113,8 @@ namespace Unifred
 			}
 		}
 
-		public override void Select(string word, IEnumerable<HierarchyAndSearchObject> result_list) {
+		public override void Select(string word, IEnumerable<HierarchyAndSearchObject> result_list)
+		{
 			if (string.IsNullOrEmpty(word)) {
 				EditorApplication.delayCall += () => {
 					HierarchyOrSearchWindow.SearchFromHierarchy();
@@ -109,14 +124,10 @@ namespace Unifred
 			EditorApplication.ExecuteMenuItem("Window/Hierarchy");
 		}
 
-		public override float GetRowHeight() {
+		public override float GetRowHeight()
+		{
 			return textGuiStyle.CalcSize(new GUIContent("sample")).y
 				+ textGuiStyle.margin.bottom + textGuiStyle.margin.top;
-		}
-
-		private void _DestroyStyle() {
-			GameObject.DestroyImmediate(defaultRowGuiStyle.normal.background);
-			GameObject.DestroyImmediate(selectedRowGuiStyle.normal.background);
 		}
 	}
 

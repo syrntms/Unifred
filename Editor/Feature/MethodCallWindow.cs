@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Reflection;
 using System.CodeDom.Compiler;
@@ -10,14 +10,17 @@ using Object = System.Object;
 
 namespace Unifred
 {
-	public class MethodCallWindow : UnifredWindow<MethodCallObject>{
-		public static void ShowMethod(IEnumerable<MethodListObject> list) {
+	public class MethodCallWindow : UnifredWindowController<MethodCallObject>
+	{
+		public static void ShowMethod(IEnumerable<MethodListObject> list)
+		{
 			MethodCall.SetList(list);
-			ShowWindow(new MethodCall());
+			ShowWindow(new MethodCall(), string.Empty);
 		}
 	}
 
-	public class MethodCall : IUnifred<MethodCallObject> {
+	public class MethodCall : UnifredFeatureBase<MethodCallObject>
+	{
 
 		private static GUIStyle textGuiStyle = new GUIStyle {
 			richText = true,
@@ -33,11 +36,14 @@ namespace Unifred
 		//set backgroudn color only
 		private static GUIStyle selectedRowGuiStyle;
 
-		public override void OnDestroy() {
-			_DestroyStyle();
+		public override void OnDestroy()
+		{
+			GameObject.DestroyImmediate(defaultRowGuiStyle.normal.background);
+			GameObject.DestroyImmediate(selectedRowGuiStyle.normal.background);
 		}
 
-		public static void SetList(IEnumerable<MethodListObject> list) {
+		public static void SetList(IEnumerable<MethodListObject> list)
+		{
 			MethodCall.list.Clear();
 			foreach (var item in list) {
 				var call_object = new MethodCallObject();
@@ -49,24 +55,28 @@ namespace Unifred
 			}
 		}
 
-		public override string GetDescription() {
+		public override string GetDescription()
+		{
 			return "input parameter of methods";
 		}
 
-		public override bool IsMultipleSelect() {
+		public override bool IsMultipleSelect()
+		{
 			return false;
 		}
 
-		public override void OnInit() {
+		public override void OnInit()
+		{
 			defaultRowGuiStyle = new GUIStyle {
-				normal = {background = Util.MakeSolidTexture(Color.clear),}
+				normal = {background = TextureUtility.MakeSolidTexture(Color.clear),}
 			};
 			selectedRowGuiStyle = new GUIStyle {
-				normal = { background = Util.MakeSolidTexture(Color.magenta + Color.gray * 1.25f),},
+				normal = { background = TextureUtility.MakeSolidTexture(Color.magenta + Color.gray * 1.25f),},
 			};
 		}
 
-		public override IEnumerable<MethodCallObject> UpdateCandidate(string word) {
+		public override IEnumerable<MethodCallObject> UpdateCandidate(string word)
+		{
 			return list;
 		}	
 
@@ -115,7 +125,8 @@ namespace Unifred
 			}
 		}
 
-		public override void Select(string word, IEnumerable<MethodCallObject> result_list) {
+		public override void Select(string word, IEnumerable<MethodCallObject> result_list)
+		{
 			string[] param_list = word.Split(new char[]{','}, StringSplitOptions.RemoveEmptyEntries);
 			foreach (var item in list) {
 				object[] real_param_list = _MakeParams(param_list, item.method.GetParameters());
@@ -123,7 +134,8 @@ namespace Unifred
 			}
 		}
 
-		private static Object[] _MakeParams(string[] string_params, ParameterInfo[] param_infos) {
+		private static Object[] _MakeParams(string[] string_params, ParameterInfo[] param_infos)
+		{
 			bool has_params = false;
 			bool is_va_list = false;
 			object[] param_list = null;
@@ -159,7 +171,8 @@ namespace Unifred
 
 		private static List<MethodCallObject> list = new List<MethodCallObject>();
 
-		private static Object _MakeValue(string value, Type type) {
+		private static Object _MakeValue(string value, Type type)
+		{
 			string source = @"
 				using UnityEngine;
 				public class ValueMaker
@@ -188,19 +201,17 @@ namespace Unifred
 			return t.InvokeMember("Eval", BindingFlags.InvokeMethod, null, null, null);
 		}
 
-		public override float GetRowHeight() {
+		public override float GetRowHeight()
+		{
 			return textGuiStyle.CalcSize(new GUIContent("sample")).y
 				+ textGuiStyle.margin.bottom + textGuiStyle.margin.top;
 		}
 
-		private void _DestroyStyle() {
-			GameObject.DestroyImmediate(defaultRowGuiStyle.normal.background);
-			GameObject.DestroyImmediate(selectedRowGuiStyle.normal.background);
-		}
 	}
 
 
-	public class MethodCallObject {
+	public class MethodCallObject
+	{
 		public string name;
 		public GameObject target;
 		public Component component;

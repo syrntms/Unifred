@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEditor;
@@ -8,14 +8,22 @@ using Object = System.Object;
 namespace Unifred
 {
 
-	public class AssetAndSearchWindow : UnifredWindow<AssetAndSearchObject>{
+	public class AssetAndSearchWindow : UnifredWindowController<AssetAndSearchObject>
+	{
 		[MenuItem("Unifred/SearchAsset %t")]
-		public static void SearchFromAsset() {
-			ShowWindow(new AssetAndSearch());
+		public static void SearchFromAsset()
+		{
+			ShowWindow(new AssetAndSearch(), string.Empty);
+		}
+
+		public static void SearchFromAsset(string initial_word)
+		{
+			ShowWindow(new AssetAndSearch(), initial_word);
 		}
 	}
 
-	public class AssetAndSearch : IUnifred<AssetAndSearchObject> {
+	public class AssetAndSearch : UnifredFeatureBase<AssetAndSearchObject>
+	{
 
 		//about label 
 		private static GUIStyle textGuiStyle = new GUIStyle {
@@ -38,30 +46,36 @@ namespace Unifred
 		private static GUIStyle selectedRowGuiStyle;
 
 		#region impl
-		public override void OnInit() {
+		public override void OnInit()
+		{
 			defaultRowGuiStyle = new GUIStyle {
-				normal = {background = Util.MakeSolidTexture(Color.clear),}
+				normal = {background = TextureUtility.MakeSolidTexture(Color.clear),}
 			};
 			selectedRowGuiStyle = new GUIStyle {
-				normal = { background = Util.MakeSolidTexture(Color.magenta + Color.gray * 1.25f),},
+				normal = { background = TextureUtility.MakeSolidTexture(Color.magenta + Color.gray * 1.25f),},
 			};
 
 			iconGuiStyle.fixedWidth = iconGuiStyle.fixedHeight = GetRowHeight();
 		}
 
-		public override void OnDestroy() {
-			_DestroyStyle();
+		public override void OnDestroy()
+		{
+			GameObject.DestroyImmediate(defaultRowGuiStyle.normal.background);
+			GameObject.DestroyImmediate(selectedRowGuiStyle.normal.background);
 		}
 
-		public override string GetDescription() {
+		public override string GetDescription()
+		{
 			return "input asset name you want <color=yellow>AND</color> search";
 		}
 
-		public override bool IsMultipleSelect() {
+		public override bool IsMultipleSelect()
+		{
 			return true;
 		}
 
-		public override IEnumerable<AssetAndSearchObject> UpdateCandidate(string input) {
+		public override IEnumerable<AssetAndSearchObject> UpdateCandidate(string input)
+		{
 			List<AssetAndSearchObject> result = new List<AssetAndSearchObject>();
             if (string.IsNullOrEmpty(input)) {
                 return result;
@@ -117,7 +131,8 @@ namespace Unifred
 			}
 		}
 
-		public override void Select(string word, IEnumerable<AssetAndSearchObject> result_list) {
+		public override void Select(string word, IEnumerable<AssetAndSearchObject> result_list)
+		{
 			if (string.IsNullOrEmpty(word)) {
 				EditorApplication.delayCall += () => {
 					AssetOrSearchWindow.SearchFromAsset();
@@ -143,20 +158,16 @@ namespace Unifred
 			}
 		}
 
-		public override float GetRowHeight() {
+		public override float GetRowHeight()
+		{
 			return textGuiStyle.CalcSize(new GUIContent("sample")).y
 				+ textGuiStyle.margin.bottom + textGuiStyle.margin.top;
 		}
 		#endregion
-
-		private void _DestroyStyle() {
-			GameObject.DestroyImmediate(defaultRowGuiStyle.normal.background);
-			GameObject.DestroyImmediate(selectedRowGuiStyle.normal.background);
-		}
-
 	}
 
-	public class AssetAndSearchObject {
+	public class AssetAndSearchObject
+	{
 		public string path;
 	};
 }
