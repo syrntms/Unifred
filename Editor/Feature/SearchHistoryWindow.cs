@@ -73,7 +73,7 @@ namespace Unifred.Feature
 			var words = input.Split(new char[] {' '}, StringSplitOptions.RemoveEmptyEntries);
 			return result.Where(
 				(item) => words.All(
-					(word) => item.input.IndexOf(input) >= 0
+					(word) => item.input.IndexOf(input, StringComparison.OrdinalIgnoreCase) >= 0
 				)
 			);
 		}	
@@ -86,15 +86,11 @@ namespace Unifred.Feature
 			string color;
 			switch (candidate.mode){
 			case SearchHistoryObject.SearchMode.AssetAndSearch:
-				color = "red";
-				break;
 			case SearchHistoryObject.SearchMode.AssetOrSearch:
 				color = "blue";
 				break;
-			case SearchHistoryObject.SearchMode.HierarchyAndSearch:
-				color = "yellow";
-				break;
 			case SearchHistoryObject.SearchMode.HierarchyOrSearch:
+			case SearchHistoryObject.SearchMode.HierarchyAndSearch:
 				color = "green";
 				break;
 			default:
