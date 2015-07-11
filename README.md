@@ -18,9 +18,19 @@ Window操作
   
   
 デフォルト機能  
-* ゲームオブジェクトを選択中にcommand + y  
-	* コンポーネントのメソッド呼び出し  
+* command + y  
+	* 選択中のゲームオブジェクトのスクリプトからメソッド呼び出し  
+* command + [  
+	* 選択中のゲームオブジェクトのコンポーネントをコピー  
+* command + ]  
+	* コピーしたコンポーネントを選択中のゲームオブジェクトへペースト  
 * command + g  
 	* Hierarchy内検索  
 * command + t  
 	* Project内検索  
+* command + ^  
+	* Unifredの履歴から検索  
+
+## Caution
+	OSX環境のメソッド呼び出しでエラーが出る場合はこちらを試してみてください
+	sudo ln -s /Applications/Unity/MonoDevelop.app/Contents/Frameworks/Mono.framework/Versions/{Version}/bin/gmcs /usr/bin
