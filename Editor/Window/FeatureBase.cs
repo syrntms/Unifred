@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
@@ -44,12 +45,28 @@ namespace Unifred
 			List<KeyValuePair<string, string>> history = _GetHistory();
 			var push_pair = new KeyValuePair<string, string>(key, searchWord);
 			history.Add(push_pair);
-			if (history.Count > Config.HISTORY_COUNT) {
-				history = history.Skip(history.Count - Config.HISTORY_COUNT).ToList();
+			history.Reverse();
+			var unique_history = history.Distinct( new HistoryLogCompare() );
+
+			if (unique_history.Count() > Config.HISTORY_COUNT) {
+				unique_history = unique_history.Skip(unique_history.Count() - Config.HISTORY_COUNT);
 			}
-			string serialized_history = SerializeUtility.SerializeObject<List<KeyValuePair<string, string>>>(history);
+			string serialized_history = SerializeUtility.SerializeObject<List<KeyValuePair<string, string>>>(unique_history.Reverse().ToList());
 			EditorUserSettings.SetConfigValue("UnifredHistory", serialized_history);
 		}
-
 	}
+
+	internal class HistoryLogCompare : IEqualityComparer<KeyValuePair<string, string>>
+	{
+		public bool Equals(KeyValuePair<string, string> x, KeyValuePair<string, string> y)
+		{
+			return x.Key == y.Key && x.Value == y.Value;
+		}
+		
+		public int GetHashCode(KeyValuePair<string, string> obj)
+		{
+			return obj.GetHashCode();
+		}
+	}
+
 }

@@ -449,16 +449,8 @@ namespace Unifred
 			GUI.SetNextControlName(controlName);
             searchWord = GUILayout.TextField((searchWord ?? ""), searchUIStyle, GUILayout.ExpandWidth(true));
             GUI.FocusControl(controlName);
-			_MakeCaretEndOfText();
 		}
-		
-		private void _MakeCaretEndOfText()
-		{
-			var editor = (TextEditor) GUIUtility.GetStateObject(typeof (TextEditor), GUIUtility.keyboardControl);            
-			editor.pos = searchWord.Length;
-			editor.selectPos = searchWord.Length;
-		}
-		
+
 		private void _OnPressedDoneKey()
 		{
 			List<T> selected_list = new List<T>();

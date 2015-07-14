@@ -69,10 +69,16 @@ namespace Unifred
 			return Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.Return;
 		}
 
+		public static bool IsPressedRemoveWordKey()
+		{
+			return Event.current.control && Event.current.keyCode == KeyCode.W;
+		}
+
 		private static bool _IsPlatformMac()
 		{
 			return Application.platform == RuntimePlatform.OSXEditor;
 		}
+
 	}
 
 }
