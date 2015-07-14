@@ -80,11 +80,12 @@ namespace Unifred
 
 			_ClampSelected();
 
+
+			_DisplaySearchTextField();
+
 			if (prevSearchWord != searchWord) {
 				selectedList.Clear();
 			}
-
-			_DisplaySearchTextField();
 
 			_UpdateCandidate();
 
