@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -25,29 +26,44 @@ namespace Unifred
 		private GUIStyle normalRowGuiStyle;
 		private GUIStyle selectedRowGuiStyle;
 
+		private Action firstGUIAction = null;
+
 		protected static void ShowWindow(UnifredFeatureBase<T> instance, string input)
 		{
+			UnifredWindow window = EditorWindow.GetWindow<UnifredWindow>();
+			window.Close();
+
 			UnifredWindowController<T> controller = new UnifredWindowController<T>();
 			controller._Initialize(instance, input);
 
-			UnifredWindow window = EditorWindow.GetWindow<UnifredWindow>();
-			window.Close();
 			window = EditorWindow.CreateInstance<UnifredWindow>();
-			window.OnGUIAction     = () => {controller.OnGUI();};
-			window.OnDestroyAction = () => {controller.OnDestroy();};
 			window.ShowAsDropDown(
 				new Rect(0, 0, 0, 0),
 				Vector2.one
 			);
 		}
 
-		public void OnDestroy()
+		public void OnEnable()
 		{
-			GameObject.DestroyImmediate(normalRowGuiStyle.normal.background);
-			GameObject.DestroyImmediate(selectedRowGuiStyle.normal.background);
+			normalRowGuiStyle = new GUIStyle {
+				normal = {background = TextureUtility.MakeSolidTexture(feature.GetNormalRowColor()),}
+			};
+			selectedRowGuiStyle = new GUIStyle {
+				normal = { background = TextureUtility.MakeSolidTexture(feature.GetSelectedRowColor())},
+			};
 		}
 
-		public void OnGUI()
+		public void OnDisable()
+		{
+			if (normalRowGuiStyle != null) {
+				GameObject.DestroyImmediate(normalRowGuiStyle.normal.background);
+			}
+			if (selectedRowGuiStyle != null) {
+				GameObject.DestroyImmediate(selectedRowGuiStyle.normal.background);
+			}
+		}
+
+		public void OnFirstGUI()
 		{
 			var window = EditorWindow.GetWindow<UnifredWindow>();
 
@@ -60,15 +76,23 @@ namespace Unifred
 				_ResizeWindow();
 				isInitializeWindowPosition = true;
 			}
+		}
+
+		public void OnGUI()
+		{
+			if (firstGUIAction != null) {
+				firstGUIAction();
+				firstGUIAction = null;
+			}
 
 			if (Input.IsPressedCancelKey()) {
-				window.Close();
+				EditorWindow.GetWindow<UnifredWindow>().Close();
 				return;
 			}
 
 			if (Input.IsPressedDoneKey() || isExecuteFromMouse) {
 				_OnPressedDoneKey();
-				window.Close();
+				EditorWindow.GetWindow<UnifredWindow>().Close();
 				return;
 			}
 
@@ -390,7 +414,7 @@ namespace Unifred
 			IEnumerable<int> uniq_selected_list = IntRange.Split(selectedList);
 			for (int i = offset ; i < offset + count ; ++i) {
 				bool is_selected = uniq_selected_list.Contains(i);
-				GUIStyle style = (is_selected)? selectedRowGuiStyle:normalRowGuiStyle;
+				GUIStyle style = (is_selected)? selectedRowGuiStyle : normalRowGuiStyle;
 
 				T candidate = candidateList.ElementAt(i);
 	            GUILayout.BeginHorizontal(style);
@@ -495,13 +519,10 @@ namespace Unifred
 			selectedList.Clear();
 			this.feature = instance;
 			instance.OnInit();
-
-			normalRowGuiStyle = new GUIStyle {
-				normal = {background = TextureUtility.MakeSolidTexture(instance.GetNormalRowColor()),}
-			};
-			selectedRowGuiStyle = new GUIStyle {
-				normal = { background = TextureUtility.MakeSolidTexture(instance.GetSelectedRowColor())},
-			};
+			UnifredWindow.OnGUIAction		= OnGUI;
+			UnifredWindow.OnEnableAction	= OnEnable;
+			UnifredWindow.OnDisableAction	= OnDisable;
+			firstGUIAction = OnFirstGUI;
 		}
 	}
 }
