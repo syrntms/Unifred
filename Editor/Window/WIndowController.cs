@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -8,7 +9,6 @@ namespace Unifred
 	public class UnifredWindowController<T>
 	{
 		private UnifredFeatureBase<T> feature;
-		private bool isInitializeWindowPosition;
 		private string prevSearchWord = null;
 		private string searchWord = null;
 		private GUIStyle searchUIStyle = null;
@@ -24,6 +24,8 @@ namespace Unifred
 
 		private GUIStyle normalRowGuiStyle;
 		private GUIStyle selectedRowGuiStyle;
+
+		private Action onGuiOnceAction;
 
 		protected static void ShowWindow(UnifredFeatureBase<T> instance, string input)
 		{
@@ -58,18 +60,19 @@ namespace Unifred
 
 		public void OnDestroy(){}
 
+		private void onGUIOnce()
+		{
+			_InitUnifredWindowStyle();
+			_ResizeWindow();
+		}
+
 		public void OnGUI()
 		{
 			var window = EditorWindow.GetWindow<UnifredWindow>();
 
-			if (searchUIStyle == null) {
-				_InitUnifredWindowStyle();
-			}
-
-			if (!isInitializeWindowPosition) {
-				window.wantsMouseMove = true;
-				_ResizeWindow();
-				isInitializeWindowPosition = true;
+			if (onGuiOnceAction != null ) {
+				onGuiOnceAction();
+				onGuiOnceAction = null;
 			}
 
 			if (Input.IsPressedCancelKey()) {
@@ -90,7 +93,6 @@ namespace Unifred
 			}
 
 			_ClampSelected();
-
 
 			_DisplaySearchTextField();
 
@@ -478,27 +480,32 @@ namespace Unifred
 		private void _InitUnifredWindowStyle()
 		{
 			string skin_prefab_path = feature.GetGuiSkinPrefabPath();
+			bool is_pro = EditorGUIUtility.isProSkin;
 			if (!string.IsNullOrEmpty(skin_prefab_path)) {
-				GUISkin ui_skin = AssetDatabase.LoadAssetAtPath(feature.GetGuiSkinPrefabPath(), typeof(GUISkin)) as GUISkin;
-				searchUIStyle = ui_skin.box;
-				scrollbarVertical = ui_skin.verticalScrollbar;
-				scrollbarHorizontal = ui_skin.horizontalScrollbar;
-				descUIStyle = EditorStyles.label;
+				GUISkin ui_skin		= AssetDatabase.LoadAssetAtPath(feature.GetGuiSkinPrefabPath(), typeof(GUISkin)) as GUISkin;
+				searchUIStyle		= ui_skin.box;
+				scrollbarVertical	= ui_skin.verticalScrollbar;
+				scrollbarHorizontal	= ui_skin.horizontalScrollbar;
+				descUIStyle			= ui_skin.label;
 			}
 			else {
-				searchUIStyle = new GUIStyle(){
-					normal = {textColor = EditorGUIUtility.isProSkin? Color.white:Color.black,},
+				searchUIStyle = new GUIStyle() {
+					normal = {
+						textColor	= is_pro? Color.black:Color.white,
+						background	= is_pro? TextureUtility.MakeSolidTexture(Color.white):TextureUtility.MakeSolidTexture(Color.gray * 0.8f),
+					},
+					margin	= new RectOffset(5, 5, 5, 5),
+					padding	= new RectOffset(5, 5, 5, 5),
 				};
-				descUIStyle = EditorStyles.label;
-				descUIStyle.richText = true;
-				scrollbarVertical   = new GUIStyle(GUI.skin.verticalScrollbar);
-				scrollbarHorizontal = GUIStyle.none;
+				scrollbarVertical		= GUI.skin.verticalScrollbar;
+				scrollbarHorizontal		= GUIStyle.none;
+				descUIStyle				= EditorStyles.label;
+				descUIStyle.richText	= true;
 			}
 		}
 
 		private void _Initialize(UnifredFeatureBase<T> instance, string word)
 		{
-			isInitializeWindowPosition = false;
 			searchWord = word;
 			prevSearchWord = null;
 			searchUIStyle = null;
@@ -506,6 +513,7 @@ namespace Unifred
 			selectedList.Clear();
 			this.feature = instance;
 			instance.OnInit();
+			onGuiOnceAction = onGUIOnce;
 
 			UnifredWindow.OnEnableAction	= OnEnable;
 			UnifredWindow.OnDisableAction	= OnDisable;
