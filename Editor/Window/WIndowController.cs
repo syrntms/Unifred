@@ -11,21 +11,31 @@ namespace Unifred
 		private UnifredFeatureBase<T> feature;
 		private string prevSearchWord = null;
 		private string searchWord = null;
-		private GUIStyle searchUIStyle = null;
-		private GUIStyle descUIStyle = null;
 		private IEnumerable<T> candidateList = new List<T>();
 		private List<IntRange> selectedList = new List<IntRange>();
 		private Vector2 scrollPosition = Vector2.zero;
 		private bool isScrollToSelected = false;
 		private bool isExecuteFromMouse = false;
+		private Action onGuiOnceAction = null;
 
-		private GUIStyle scrollbarHorizontal;
-		private GUIStyle scrollbarVertical;
+		private GUIStyle unifredStyle;
+		private GUISkin skin;
+		private GUIStyle[] styles;
 
-		private GUIStyle normalRowGuiStyle;
-		private GUIStyle selectedRowGuiStyle;
-
-		private Action onGuiOnceAction;
+		public enum StyleType
+		{
+			Entire = 0,
+			Header,
+			Body,
+			HeaderTop,
+			HeaderBottom,
+			HeaderTopDescription,
+			HeaderTopExecuteButton,
+			HeaderBottomSearchBox,
+			BodyNormalRow,
+			BodySelectedRow,
+			BodySelectedGroup,
+		};
 
 		protected static void ShowWindow(UnifredFeatureBase<T> instance, string input)
 		{
@@ -36,33 +46,18 @@ namespace Unifred
 			controller._Initialize(instance, input);
 
 			window = EditorWindow.CreateInstance<UnifredWindow>();
-			window.ShowAsDropDown(
-				new Rect(0, 0, 0, 0),
-				Vector2.one
-			);
+			window.ShowAsDropDown(default(Rect), Vector2.one);
 		}
-
-		public void OnEnable()
-		{
-			normalRowGuiStyle = new GUIStyle {
-				normal = {background = TextureUtility.MakeSolidTexture(feature.GetNormalRowColor()),}
-			};
-			selectedRowGuiStyle = new GUIStyle {
-				normal = { background = TextureUtility.MakeSolidTexture(feature.GetSelectedRowColor())},
-			};
-		}
-
-		public void OnDisable()
-		{
-			GameObject.DestroyImmediate(normalRowGuiStyle.normal.background);
-			GameObject.DestroyImmediate(selectedRowGuiStyle.normal.background);
-		}
-
-		public void OnDestroy(){}
 
 		private void onGUIOnce()
 		{
-			_InitUnifredWindowStyle();
+			Texture2D texture = null;
+			texture = (Config.BACK_GROUND_MODE == BackGroundMode.Transparent)?
+				_CreateTransparentTexture():TextureUtility.MakeSolidTexture(Config.BACKGROUND_COLOR);
+
+			unifredStyle = new GUIStyle() {
+				normal = { background = texture, },
+			};
 			_ResizeWindow();
 		}
 
@@ -70,7 +65,7 @@ namespace Unifred
 		{
 			var window = EditorWindow.GetWindow<UnifredWindow>();
 
-			if (onGuiOnceAction != null ) {
+			if (onGuiOnceAction != null) {
 				onGuiOnceAction();
 				onGuiOnceAction = null;
 			}
@@ -90,11 +85,34 @@ namespace Unifred
 
 			if (Event.current.isMouse) {
 				_UpdateSelectedByMouse();
+				if (!_IsScrollBarEvent()) {
+					Event.current.Use();
+				}
 			}
 
 			_ClampSelected();
 
-			_DisplaySearchTextField();
+			_DisplayEntire();
+		}
+
+		private bool _IsScrollBarEvent()
+		{
+			var mouse_position = Event.current.mousePosition;
+			var space = styles[(int)StyleType.Entire].margin.right + styles[(int)StyleType.Entire].padding.right
+				+ styles[(int)StyleType.Body].margin.right + styles[(int)StyleType.Body].padding.right;
+			var is_scrollbar_event = feature.GetWindowSize().x - space - skin.verticalScrollbar.fixedWidth < mouse_position.x
+				&& mouse_position.x < feature.GetWindowSize().x - space;
+			return is_scrollbar_event;
+		}
+
+		private void _DisplayEntire()
+		{
+			GUILayout.BeginVertical(unifredStyle);
+			GUILayout.BeginVertical(styles[(int)StyleType.Entire]);
+
+			GUILayout.BeginVertical(styles[(int)StyleType.Header]);
+			_DisplayHeader();
+			GUILayout.EndVertical();
 
 			if (prevSearchWord != searchWord) {
 				selectedList.Clear();
@@ -102,9 +120,14 @@ namespace Unifred
 
 			_UpdateCandidate();
 
+			GUILayout.BeginVertical(styles[(int)StyleType.Body]);
 			_DisplayCandidate();
+			GUILayout.EndVertical();
 
 			prevSearchWord = searchWord;
+
+			GUILayout.EndVertical();
+			GUILayout.EndVertical();
 		}
 
 		/// <summary>
@@ -130,22 +153,52 @@ namespace Unifred
 			}
 		}
 
+
+		private float _GetRowHeight()
+		{
+			StyleType[] styleIndexes = {
+				StyleType.BodyNormalRow,
+				StyleType.BodySelectedRow,
+			};
+
+			float offset = styleIndexes.Select(index => styles[(int)index])
+				.Sum(style => style.margin.top + style.margin.bottom + style.padding.top + style.padding.bottom);
+			return offset + feature.GetRowHeight();
+		}
+
 		/// <summary>
 		/// get row height of SelectedListUI of editor window from top.
 		/// </summary>
 		/// <returns>The get row start height.</returns>
 		private float _GetRowStartHeight()
 		{
-			GUIStyle[] styles = {searchUIStyle, EditorStyles.label};
-			float offset = 0f;
-			foreach (var style in styles) {
-				offset += style.CalcSize(new GUIContent(searchWord)).y
-					+ style.margin.top + style.margin.bottom;
-					//margin is excluded from calcsize
-					//padding, fontsize is included 
-					//border is ignored
-			}
-			return offset;
+			StyleType[] styleIndexes = {
+				StyleType.Header,
+				StyleType.HeaderBottom,
+				StyleType.HeaderBottomSearchBox,
+				StyleType.HeaderTop,
+				StyleType.HeaderTopDescription,
+			};
+
+			float offset = styleIndexes.Select(index => styles[(int)index])
+				.Sum(style => style.margin.top + style.margin.bottom + style.padding.top + style.padding.bottom);
+
+			StyleType[] stringStyleIndexes = {
+				StyleType.HeaderBottomSearchBox,
+				StyleType.HeaderTopDescription,
+			};
+			offset += stringStyleIndexes
+				.Select(index => styles[(int)index])
+				.Sum(style => style.CalcSize(new GUIContent(searchWord)).y );
+
+			StyleType[] topStyleIndexes = {
+				StyleType.Entire,
+				StyleType.Body,
+			};
+			offset += topStyleIndexes
+				.Select(index => styles[(int)index])
+				.Sum(style => style.margin.top + style.padding.top);
+			return offset + styleIndexes.Count();
 		}
 
 		/// <summary>
@@ -155,10 +208,10 @@ namespace Unifred
 		private int _GetCandidateIndexOnMouse()
 		{
 			float mouse_y = Event.current.mousePosition.y;
-			float scroll_y = scrollPosition.y;
+			float scroll_y = Mathf.Floor(scrollPosition.y / feature.GetRowHeight()) * feature.GetRowHeight();
 			float offset = _GetRowStartHeight();
-			var index = Mathf.Floor((mouse_y + scroll_y - offset) / feature.GetRowHeight());
-			return (int)index;
+			var index = Mathf.FloorToInt((mouse_y + scroll_y - offset) / feature.GetRowHeight());
+			return index;
 		}
 
 		/// <summary>
@@ -322,7 +375,6 @@ namespace Unifred
 					current_selected.to   = candidateList.Count() - 1;
 				}
 			}
-			Event.current.Use();
 		}
 
 		/// <summary>
@@ -340,12 +392,14 @@ namespace Unifred
 			if (Input.IsPressedRoundGoKey()) {
 				_UpdateSelectedByRoundGoKey();
 				isScrollToSelected = true;
+				Event.current.Use();
 			}
 
 			if (Event.current.type == EventType.ValidateCommand
 			    && Event.current.commandName == "SelectAll"
 		    ){
 				_UpdateSelectedByCommandSelectAll();
+				Event.current.Use();
 			}
 		}
 
@@ -371,8 +425,8 @@ namespace Unifred
 
 			scrollPosition = EditorGUILayout.BeginScrollView(
 				scrollPosition,
-			    scrollbarHorizontal,
-				scrollbarVertical,
+			    skin.horizontalScrollbar,
+			    skin.verticalScrollbar,
 				null
 			);
 
@@ -401,14 +455,31 @@ namespace Unifred
 		private void _DisplayEachCandidate(string word, int offset, int count)
 		{
 			IEnumerable<int> uniq_selected_list = IntRange.Split(selectedList);
+			bool is_selected_before = false;
+			bool is_selected;
+
 			for (int i = offset ; i < offset + count ; ++i) {
-				bool is_selected = uniq_selected_list.Contains(i);
-				GUIStyle style = (is_selected)? selectedRowGuiStyle:normalRowGuiStyle;
+				is_selected = uniq_selected_list.Contains(i);
+				if (!is_selected_before && is_selected) {
+					GUILayout.BeginVertical(styles[(int)StyleType.BodySelectedGroup]);
+				}
+				else if (is_selected_before && !is_selected) {
+					GUILayout.EndVertical();
+				}
+
+				is_selected_before = is_selected;
+
+				GUIStyle style = (is_selected)?
+					styles[(int)StyleType.BodySelectedRow]:styles[(int)StyleType.BodyNormalRow];
 
 				T candidate = candidateList.ElementAt(i);
 	            GUILayout.BeginHorizontal(style);
 				feature.Draw(word, candidate, is_selected);
 	            GUILayout.EndHorizontal();
+			}
+
+			if (is_selected_before) {
+				GUILayout.EndVertical();
 			}
 		}
 
@@ -438,7 +509,7 @@ namespace Unifred
 			}
 			return result;
 		}
-		
+
 		private void _ResizeWindow()
 		{
 			Vector2 size = feature.GetWindowSize();
@@ -447,20 +518,29 @@ namespace Unifred
 			window.position = Input.MakeMouseBasedPosition(size.x, size.y, window.position.position);
 		}
 		
-		private void _DisplaySearchTextField()
+		private void _DisplayHeader()
 		{
 			int selected_count = IntRange.Split(selectedList).Count();
 			string candidate_count = "(" + selected_count + "/" + candidateList.Count() + ")  ";
 
-			GUILayout.BeginHorizontal();
-			EditorGUILayout.LabelField(candidate_count + feature.GetDescription(), descUIStyle);
+			GUILayout.BeginHorizontal(styles[(int)StyleType.HeaderTop]);
+			EditorGUILayout.LabelField(
+				candidate_count + feature.GetDescription(),
+				styles[(int)StyleType.HeaderTopDescription]
+			);
 			EditorGUILayout.Space();
 			isExecuteFromMouse = GUILayout.Button("execute");
 			GUILayout.EndHorizontal();
 
 			const string controlName = "search_word";
 			GUI.SetNextControlName(controlName);
-            searchWord = GUILayout.TextField((searchWord ?? ""), searchUIStyle, GUILayout.ExpandWidth(true));
+			GUILayout.BeginHorizontal(styles[(int)StyleType.HeaderBottom]);
+			searchWord = GUILayout.TextField(
+				(searchWord ?? ""),
+				styles[(int)StyleType.HeaderBottomSearchBox],
+				GUILayout.ExpandWidth(true)
+			);
+			GUILayout.EndHorizontal();
             GUI.FocusControl(controlName);
 		}
 
@@ -477,48 +557,74 @@ namespace Unifred
 			feature.Select(searchWord, selected_list);
 		}
 
-		private void _InitUnifredWindowStyle()
-		{
-			string skin_prefab_path = feature.GetGuiSkinPrefabPath();
-			bool is_pro = EditorGUIUtility.isProSkin;
-			if (!string.IsNullOrEmpty(skin_prefab_path)) {
-				GUISkin ui_skin		= AssetDatabase.LoadAssetAtPath(feature.GetGuiSkinPrefabPath(), typeof(GUISkin)) as GUISkin;
-				searchUIStyle		= ui_skin.box;
-				scrollbarVertical	= ui_skin.verticalScrollbar;
-				scrollbarHorizontal	= ui_skin.horizontalScrollbar;
-				descUIStyle			= ui_skin.label;
-			}
-			else {
-				searchUIStyle = new GUIStyle() {
-					normal = {
-						textColor	= is_pro? Color.black:Color.white,
-						background	= is_pro? TextureUtility.MakeSolidTexture(Color.white):TextureUtility.MakeSolidTexture(Color.gray * 0.8f),
-					},
-					margin	= new RectOffset(5, 5, 5, 5),
-					padding	= new RectOffset(5, 5, 5, 5),
-				};
-				scrollbarVertical		= GUI.skin.verticalScrollbar;
-				scrollbarHorizontal		= GUIStyle.none;
-				descUIStyle				= EditorStyles.label;
-				descUIStyle.richText	= true;
-			}
-		}
-
 		private void _Initialize(UnifredFeatureBase<T> instance, string word)
 		{
 			searchWord = word;
 			prevSearchWord = null;
-			searchUIStyle = null;
 			candidateList = new List<T>();
 			selectedList.Clear();
 			this.feature = instance;
 			instance.OnInit();
 			onGuiOnceAction = onGUIOnce;
 
-			UnifredWindow.OnEnableAction	= OnEnable;
-			UnifredWindow.OnDisableAction	= OnDisable;
-			UnifredWindow.OnGUIAction		= OnGUI;
-			UnifredWindow.OnDestroyAction	= OnDestroy;
+			skin = Resources.Load("Unifred/CustomeStyles", typeof(GUISkin)) as GUISkin;
+			styles = skin.customStyles;
+
+			UnifredWindow.OnGUIAction = OnGUI;
+		}
+
+		private Texture2D _CreateTransparentTexture()
+		{
+			Rect rect = _GetWindowRect();
+			var colors = UnityEditorInternal.InternalEditorUtility.ReadScreenPixel(
+				rect.position,
+				(int)rect.size.x,
+				(int)rect.size.y
+			);
+			return TextureUtility.MakeTexture(
+				colors,
+				(int)rect.size.x,
+				(int)rect.size.y
+			);
+		}
+
+		private Rect _GetWindowRect()
+		{
+			switch (Application.platform) {
+			case RuntimePlatform.OSXEditor:
+				return _GetOSXWindowRect();
+			case RuntimePlatform.WindowsEditor:
+				return _GetWindowsWindowRect();
+			}
+			return new Rect(0, 0, 0, 0);
+		}
+
+		private Rect _GetWindowsWindowRect()
+		{
+			return new Rect(
+				Input.GetMousePosition(),
+				feature.GetWindowSize()
+			);
+		}
+
+		private Rect _GetOSXWindowRect()
+		{
+			Vector2 screenSize = new Vector2(Screen.currentResolution.width, Screen.currentResolution.height);
+			Vector2 screenOffset = Vector2.zero;
+
+			Vector2 startPosition = Input.GetMousePosition();
+			float menu_height = EditorGUIUtility.GUIToScreenPoint(Vector2.zero).y;
+
+			startPosition.x = Mathf.Max(startPosition.x, screenOffset.x);
+			startPosition.x = Mathf.Min(startPosition.x, screenOffset.x + screenSize.x - feature.GetWindowSize().x);
+			startPosition.y += menu_height;
+			startPosition.y = Mathf.Max(startPosition.y, screenOffset.y + menu_height);
+			startPosition.y = Mathf.Min(startPosition.y, screenOffset.y + screenSize.y - Config.DOCK_HEIGHT - feature.GetWindowSize().y);
+
+			return new Rect(
+				startPosition,
+				feature.GetWindowSize()
+			);
 		}
 	}
 }

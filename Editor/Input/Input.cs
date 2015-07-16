@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace Unifred
 {
@@ -8,6 +8,11 @@ namespace Unifred
 		{
 			var pos = Event.current.mousePosition + offset;
 			return new Rect(pos.x, pos.y, width, height);
+		}
+
+		public static Vector2 GetMousePosition()
+		{
+			return Event.current.mousePosition;
 		}
 
 		public static bool IsMouseDown()

@@ -18,6 +18,14 @@ namespace Unifred
 			solid_texture.Apply();
 			return solid_texture;
 		}
-		
+
+		public static Texture2D MakeTexture(Color[] col, int width, int height)
+		{
+			var texture = new Texture2D(width, height);
+			texture.SetPixels(col);
+			texture.wrapMode = TextureWrapMode.Repeat;
+			texture.Apply();
+			return texture;
+		}
 	}
 }
