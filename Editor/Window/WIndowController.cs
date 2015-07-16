@@ -27,25 +27,36 @@ namespace Unifred
 
 		protected static void ShowWindow(UnifredFeatureBase<T> instance, string input)
 		{
+			UnifredWindow window = EditorWindow.GetWindow<UnifredWindow>();
+			window.Close();
+
 			UnifredWindowController<T> controller = new UnifredWindowController<T>();
 			controller._Initialize(instance, input);
 
-			UnifredWindow window = EditorWindow.GetWindow<UnifredWindow>();
-			window.Close();
 			window = EditorWindow.CreateInstance<UnifredWindow>();
-			window.OnGUIAction     = () => {controller.OnGUI();};
-			window.OnDestroyAction = () => {controller.OnDestroy();};
 			window.ShowAsDropDown(
 				new Rect(0, 0, 0, 0),
 				Vector2.one
 			);
 		}
 
-		public void OnDestroy()
+		public void OnEnable()
+		{
+			normalRowGuiStyle = new GUIStyle {
+				normal = {background = TextureUtility.MakeSolidTexture(feature.GetNormalRowColor()),}
+			};
+			selectedRowGuiStyle = new GUIStyle {
+				normal = { background = TextureUtility.MakeSolidTexture(feature.GetSelectedRowColor())},
+			};
+		}
+
+		public void OnDisable()
 		{
 			GameObject.DestroyImmediate(normalRowGuiStyle.normal.background);
 			GameObject.DestroyImmediate(selectedRowGuiStyle.normal.background);
 		}
+
+		public void OnDestroy(){}
 
 		public void OnGUI()
 		{
@@ -496,12 +507,10 @@ namespace Unifred
 			this.feature = instance;
 			instance.OnInit();
 
-			normalRowGuiStyle = new GUIStyle {
-				normal = {background = TextureUtility.MakeSolidTexture(instance.GetNormalRowColor()),}
-			};
-			selectedRowGuiStyle = new GUIStyle {
-				normal = { background = TextureUtility.MakeSolidTexture(instance.GetSelectedRowColor())},
-			};
+			UnifredWindow.OnEnableAction	= OnEnable;
+			UnifredWindow.OnDisableAction	= OnDisable;
+			UnifredWindow.OnGUIAction		= OnGUI;
+			UnifredWindow.OnDestroyAction	= OnDestroy;
 		}
 	}
 }
