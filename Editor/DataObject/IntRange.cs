@@ -6,8 +6,20 @@ namespace Unifred
 {
 	public class IntRange
 	{
-		public int from = 0;
-		public int to = 0;
+		public int from;
+		public int to;
+
+
+		public IntRange()
+		{
+			from = to = 0;
+		}
+
+		public IntRange(int from, int to)
+		{
+			this.from = from;
+			this.to = to;
+		}
 
 		public static IEnumerable<int> Split(IEnumerable<IntRange> range_list)
 		{

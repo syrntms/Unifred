@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEditor;
@@ -18,7 +18,6 @@ namespace Unifred
 		private bool isExecuteFromMouse = false;
 		private Action onGuiOnceAction = null;
 
-		private GUIStyle unifredStyle;
 		private GUISkin skin;
 		private GUIStyle[] styles;
 
@@ -49,18 +48,6 @@ namespace Unifred
 			window.ShowAsDropDown(default(Rect), Vector2.one);
 		}
 
-		private void onGUIOnce()
-		{
-			Texture2D texture = null;
-			texture = (Config.BACK_GROUND_MODE == BackGroundMode.Transparent)?
-				_CreateTransparentTexture():TextureUtility.MakeSolidTexture(Config.BACKGROUND_COLOR);
-
-			unifredStyle = new GUIStyle() {
-				normal = { background = texture, },
-			};
-			_ResizeWindow();
-		}
-
 		public void OnGUI()
 		{
 			var window = EditorWindow.GetWindow<UnifredWindow>();
@@ -75,7 +62,7 @@ namespace Unifred
 				return;
 			}
 
-			if (Input.IsPressedDoneKey() || isExecuteFromMouse) {
+			if (Input.IsPressedDoneKey()) {
 				_OnPressedDoneKey();
 				window.Close();
 				return;
@@ -85,14 +72,17 @@ namespace Unifred
 
 			if (Event.current.isMouse) {
 				_UpdateSelectedByMouse();
-				if (!_IsScrollBarEvent()) {
-					Event.current.Use();
-				}
 			}
 
 			_ClampSelected();
 
 			_DisplayEntire();
+
+			if (isExecuteFromMouse) {
+				_OnPressedDoneKey();
+				window.Close();
+				return;
+			}
 		}
 
 		private bool _IsScrollBarEvent()
@@ -107,26 +97,19 @@ namespace Unifred
 
 		private void _DisplayEntire()
 		{
-			GUILayout.BeginVertical(unifredStyle);
 			GUILayout.BeginVertical(styles[(int)StyleType.Entire]);
 
-			GUILayout.BeginVertical(styles[(int)StyleType.Header]);
 			_DisplayHeader();
-			GUILayout.EndVertical();
 
 			if (prevSearchWord != searchWord) {
 				selectedList.Clear();
+                candidateList = feature.UpdateCandidate(searchWord).ToList();
 			}
 
-			_UpdateCandidate();
-
-			GUILayout.BeginVertical(styles[(int)StyleType.Body]);
 			_DisplayCandidate();
-			GUILayout.EndVertical();
 
 			prevSearchWord = searchWord;
 
-			GUILayout.EndVertical();
 			GUILayout.EndVertical();
 		}
 
@@ -220,7 +203,7 @@ namespace Unifred
 		private void _UpdateSelectedByMouse()
 		{
 			int index = _GetCandidateIndexOnMouse();
-			bool isRowClicked = index >= 0;
+			bool isRowClicked = index >= 0 && !_IsScrollBarEvent();
 
 			if (!Input.IsMouseDown() || !isRowClicked) {
 				return;
@@ -232,6 +215,7 @@ namespace Unifred
 			else {
 				_UpdateSelectedByMouseWithoutOption();
 			}
+			Event.current.Use();
 		}
 
 		/// <summary>
@@ -248,12 +232,13 @@ namespace Unifred
 		private void _UpdateSelectedByMouseWithExpand()
 		{
 			IntRange current_selected = (selectedList.Count() == 0)? null : selectedList.Last();
+			int index = _GetCandidateIndexOnMouse();
 			if (current_selected == null) {
-				current_selected = new IntRange();
-				current_selected.from = current_selected.to = 0;
-				selectedList.Add(current_selected);
+				selectedList.Add(new IntRange(0, index));
 			}
-			current_selected.to = _GetCandidateIndexOnMouse();
+			else {
+				current_selected.to = index;
+			}
 		}
 
 		/// <summary>
@@ -270,9 +255,7 @@ namespace Unifred
 				selectedList = IntRange.Build(list).ToList();
 			}
 			else {
-				IntRange range = new IntRange();
-				range.from = range.to = index;
-				selectedList.Add(range);
+				selectedList.Add(new IntRange(index, index));
 			}
 		}
 
@@ -281,21 +264,26 @@ namespace Unifred
 		/// </summary>
 		private void _UpdateSelectedByKeyboardWithExpand()
 		{
-			IntRange current_selected = (selectedList.Count() == 0)? null : selectedList.Last();
+			bool is_first = selectedList.Count() == 0;
+			IntRange current_selected = is_first? new IntRange() : selectedList.Last();
+			bool is_update = false;
 
 			if (Input.IsPressedDownKey()) {
-				if (current_selected == null) {
-					selectedList.Add(current_selected = new IntRange());
+				is_update = true;
+				if (!is_first) {
+					current_selected.to++;
 				}
-				current_selected.to++;
-				isScrollToSelected = true;
 			}
 			if (Input.IsPressedUpKey()) {
-				if (current_selected == null) {
-					selectedList.Add(current_selected = new IntRange());
-				}
+				is_update = true;
 				current_selected.to--;
+			}
+
+			if (is_update) {
 				isScrollToSelected = true;
+				if (is_first) {
+					selectedList.Add(current_selected);
+				}
 			}
 		}
 
@@ -304,24 +292,25 @@ namespace Unifred
 		/// </summary>
 		private void _UpdateSelectedByKeyboardWithoutExpand()
 		{
-			IntRange current_selected = (selectedList.Count() == 0)? null : selectedList.Last();
+			bool is_first = selectedList.Count() == 0;
+			IntRange current_selected = is_first? new IntRange() : selectedList.Last();
+			bool is_update = false;
 
 			if (Input.IsPressedDownKey()) {
-				selectedList.Clear();
-				bool is_first = current_selected == null;
-				current_selected = current_selected ?? new IntRange();
-				selectedList.Add(current_selected);
-				isScrollToSelected = true;
+				is_update = true;
 				if (!is_first) {
 					current_selected.from = ++current_selected.to;
 				}
 			}
 			if (Input.IsPressedUpKey()) {
-				selectedList.Clear();
-				current_selected = current_selected ?? new IntRange();
-				selectedList.Add(current_selected);
-				isScrollToSelected = true;
+				is_update = true;
 				current_selected.from = --current_selected.to;
+			}
+
+			if (is_update) {
+				isScrollToSelected = true;
+				selectedList.Clear();
+				selectedList.Add(current_selected);
 			}
 		}
 
@@ -335,21 +324,20 @@ namespace Unifred
 				return;
 			}
 
-			IntRange current_selected = (selectedList.Count() == 0)? null:selectedList.Last();
+			bool is_first = selectedList.Count() == 0;
+			IntRange current_selected = is_first? new IntRange():selectedList.Last();
 			selectedList.Clear();
-			bool is_first = current_selected == null;
-			current_selected = current_selected ?? new IntRange();
 			selectedList.Add(current_selected);
+			isScrollToSelected = true;
 
+			int next = 0;
 			if (Input.IsPressedReverseKey()) {
-				int next = --current_selected.to;
-				next = (next < 0)? (next + result_count):next;
-				current_selected.from = current_selected.to = next;
+				next = --current_selected.to;
 			}
 			else {
-				int next = (is_first)? 0:++current_selected.to;
-				current_selected.from = current_selected.to = next % result_count;
+				next = (is_first)? 0:++current_selected.to;
 			}
+			current_selected.from = current_selected.to = (next + result_count) % result_count;
 		}
 
 		/// <summary>
@@ -358,23 +346,16 @@ namespace Unifred
 		private void _UpdateSelectedByCommandSelectAll()
 		{
 			IntRange current_selected = (selectedList.Count() == 0)? null:selectedList.Last();
-			current_selected = (selectedList.Count() == 0)? null:selectedList.Last();
-			if (current_selected == null) {
-				selectedList.Add(current_selected = new IntRange());
-				current_selected.from = 0;
-				current_selected.to   = candidateList.Count() - 1;
-			}
-			else {
+			selectedList.Clear();
+
+			if (current_selected != null) {
 				int min = Mathf.Min(current_selected.from, current_selected.to);
 				int max = Mathf.Max(current_selected.from, current_selected.to);
 				if (min == 0 && max == candidateList.Count() - 1) {
-					selectedList.Clear();
-				}
-				else {
-					current_selected.from = 0;
-					current_selected.to   = candidateList.Count() - 1;
+					return;
 				}
 			}
+			selectedList.Add(new IntRange(0, candidateList.Count() - 1));
 		}
 
 		/// <summary>
@@ -391,7 +372,6 @@ namespace Unifred
 
 			if (Input.IsPressedRoundGoKey()) {
 				_UpdateSelectedByRoundGoKey();
-				isScrollToSelected = true;
 				Event.current.Use();
 			}
 
@@ -404,25 +384,15 @@ namespace Unifred
 		}
 
 		/// <summary>
-		/// update candidate list by UnifredFeature instance
-		/// </summary>
-        private void _UpdateCandidate()
-		{
-            if (prevSearchWord != searchWord) {
-                candidateList = feature.UpdateCandidate(searchWord).ToList();
-			}
-        }
-
-		/// <summary>
 		/// display candidate area in editor window 
 		/// </summary>
 		private void _DisplayCandidate()
 		{
+			GUILayout.BeginVertical(styles[(int)StyleType.Body]);
 			if (isScrollToSelected) {
 				scrollPosition = _CulcScrollPosition();
 				isScrollToSelected = false;
 			}
-
 			scrollPosition = EditorGUILayout.BeginScrollView(
 				scrollPosition,
 			    skin.horizontalScrollbar,
@@ -444,6 +414,7 @@ namespace Unifred
 			GUILayout.Space(rest);
 
 			EditorGUILayout.EndScrollView();
+			GUILayout.EndVertical();
 		}
 
 		/// <summary>
@@ -490,7 +461,6 @@ namespace Unifred
 			float select_area_height = feature.GetWindowSize().y - _GetRowStartHeight();
 			int scroll_start_index = Mathf.CeilToInt(scrollPosition.y / feature.GetRowHeight());
 			int scroll_end_index   = scroll_start_index + Mathf.FloorToInt(select_area_height / feature.GetRowHeight()) - 1;
-			//adjustment
 
 			IntRange current_selected = (selectedList.Count() == 0)? null:selectedList.Last();
 			int latest_index = current_selected == null? 0:current_selected.to;
@@ -520,28 +490,40 @@ namespace Unifred
 		
 		private void _DisplayHeader()
 		{
-			int selected_count = IntRange.Split(selectedList).Count();
-			string candidate_count = "(" + selected_count + "/" + candidateList.Count() + ")  ";
+			GUILayout.BeginVertical(styles[(int)StyleType.Header]);
 
+			//header top
+			string header_label = string.Format("({0} / {1}) {2}",
+				IntRange.Split(selectedList).Count(),
+                candidateList.Count(),
+			    feature.GetDescription()
+            );
 			GUILayout.BeginHorizontal(styles[(int)StyleType.HeaderTop]);
-			EditorGUILayout.LabelField(
-				candidate_count + feature.GetDescription(),
-				styles[(int)StyleType.HeaderTopDescription]
-			);
+			EditorGUILayout.LabelField(header_label, styles[(int)StyleType.HeaderTopDescription]);
 			EditorGUILayout.Space();
-			isExecuteFromMouse = GUILayout.Button("execute");
+			isExecuteFromMouse = GUILayout.Button("execute", styles[(int)StyleType.HeaderTopExecuteButton]);
 			GUILayout.EndHorizontal();
 
+			//header bottom
 			const string controlName = "search_word";
 			GUI.SetNextControlName(controlName);
+            GUI.FocusControl(controlName);
 			GUILayout.BeginHorizontal(styles[(int)StyleType.HeaderBottom]);
 			searchWord = GUILayout.TextField(
 				(searchWord ?? ""),
 				styles[(int)StyleType.HeaderBottomSearchBox],
 				GUILayout.ExpandWidth(true)
 			);
+			_MakeCursorEndOfText();
 			GUILayout.EndHorizontal();
-            GUI.FocusControl(controlName);
+			GUILayout.EndVertical();
+		}
+
+		private void _MakeCursorEndOfText()
+		{
+			var editor = (TextEditor) GUIUtility.GetStateObject(typeof (TextEditor), GUIUtility.keyboardControl);
+			editor.pos = searchWord.Length;
+			editor.selectPos = searchWord.Length;
 		}
 
 		private void _OnPressedDoneKey()
@@ -565,66 +547,12 @@ namespace Unifred
 			selectedList.Clear();
 			this.feature = instance;
 			instance.OnInit();
-			onGuiOnceAction = onGUIOnce;
+			onGuiOnceAction = () => {_ResizeWindow();};
 
 			skin = Resources.Load("Unifred/CustomeStyles", typeof(GUISkin)) as GUISkin;
 			styles = skin.customStyles;
 
 			UnifredWindow.OnGUIAction = OnGUI;
-		}
-
-		private Texture2D _CreateTransparentTexture()
-		{
-			Rect rect = _GetWindowRect();
-			var colors = UnityEditorInternal.InternalEditorUtility.ReadScreenPixel(
-				rect.position,
-				(int)rect.size.x,
-				(int)rect.size.y
-			);
-			return TextureUtility.MakeTexture(
-				colors,
-				(int)rect.size.x,
-				(int)rect.size.y
-			);
-		}
-
-		private Rect _GetWindowRect()
-		{
-			switch (Application.platform) {
-			case RuntimePlatform.OSXEditor:
-				return _GetOSXWindowRect();
-			case RuntimePlatform.WindowsEditor:
-				return _GetWindowsWindowRect();
-			}
-			return new Rect(0, 0, 0, 0);
-		}
-
-		private Rect _GetWindowsWindowRect()
-		{
-			return new Rect(
-				Input.GetMousePosition(),
-				feature.GetWindowSize()
-			);
-		}
-
-		private Rect _GetOSXWindowRect()
-		{
-			Vector2 screenSize = new Vector2(Screen.currentResolution.width, Screen.currentResolution.height);
-			Vector2 screenOffset = Vector2.zero;
-
-			Vector2 startPosition = Input.GetMousePosition();
-			float menu_height = EditorGUIUtility.GUIToScreenPoint(Vector2.zero).y;
-
-			startPosition.x = Mathf.Max(startPosition.x, screenOffset.x);
-			startPosition.x = Mathf.Min(startPosition.x, screenOffset.x + screenSize.x - feature.GetWindowSize().x);
-			startPosition.y += menu_height;
-			startPosition.y = Mathf.Max(startPosition.y, screenOffset.y + menu_height);
-			startPosition.y = Mathf.Min(startPosition.y, screenOffset.y + screenSize.y - Config.DOCK_HEIGHT - feature.GetWindowSize().y);
-
-			return new Rect(
-				startPosition,
-				feature.GetWindowSize()
-			);
 		}
 	}
 }
