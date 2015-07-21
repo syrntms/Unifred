@@ -20,7 +20,7 @@ namespace Unifred
 		public static GUIStyle BodyVerticalScrollBar;
 		public static GUIStyle BodyHorizontalScrollBar;
 
-		static Styles()
+		public static void Setup()
 		{
 			Entire = new GUIStyle() {
 				normal = new GUIStyleState() {
@@ -49,9 +49,9 @@ namespace Unifred
 				padding = new RectOffset(10, 10, 3, 3),
 			};
 
-			HeaderBottom = new GUIStyle() { };
+			HeaderBottom = new GUIStyle() {};
 
-			HeaderTopDescription = new GUIStyle() { };
+			HeaderTopDescription = new GUIStyle() {};
 
 			HeaderTopExecuteButton = new GUIStyle() {
 				normal = new GUIStyleState() {

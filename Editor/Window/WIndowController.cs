@@ -86,6 +86,7 @@ namespace Unifred
 
 			if (prevSearchWord != searchWord) {
 				selectedList.Clear();
+				scrollPosition = Vector2.zero;
                 candidateList = feature.UpdateCandidate(searchWord).ToList();
 			}
 
@@ -254,6 +255,7 @@ namespace Unifred
 					current_selected.to++;
 				}
 			}
+
 			if (Input.IsPressedUpKey()) {
 				is_update = true;
 				current_selected.to--;
@@ -527,7 +529,7 @@ namespace Unifred
 			selectedList.Clear();
 			this.feature = instance;
 			instance.OnInit();
-			onGuiOnceAction = () => {_ResizeWindow();};
+			onGuiOnceAction = () => {_ResizeWindow(); Styles.Setup();};
 
 			UnifredWindow.OnGUIAction = OnGUI;
 		}
