@@ -30,7 +30,7 @@ namespace Unifred
 			margin = new RectOffset(5, 5, 5, 5),
 			alignment = TextAnchor.MiddleLeft,
 			normal = {
-				textColor = EditorStyles.label.normal.textColor,
+				textColor = Color.white,
 			},
 		};
 

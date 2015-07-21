@@ -31,7 +31,7 @@ namespace Unifred
 			fontSize = 12,
 			margin = new RectOffset(5, 5, 5, 5),
 			alignment = TextAnchor.MiddleLeft,
-			normal = { textColor = EditorStyles.label.normal.textColor }
+			normal = { textColor = Color.white, }
 		};
 
 		public override string GetDescription()

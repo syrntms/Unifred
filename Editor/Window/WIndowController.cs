@@ -18,23 +18,6 @@ namespace Unifred
 		private bool isExecuteFromMouse = false;
 		private Action onGuiOnceAction = null;
 
-		private GUISkin skin;
-		private GUIStyle[] styles;
-
-		public enum StyleType
-		{
-			Entire = 0,
-			Header,
-			Body,
-			HeaderTop,
-			HeaderBottom,
-			HeaderTopDescription,
-			HeaderTopExecuteButton,
-			HeaderBottomSearchBox,
-			BodyNormalRow,
-			BodySelectedRow,
-			BodySelectedGroup,
-		};
 
 		protected static void ShowWindow(UnifredFeatureBase<T> instance, string input)
 		{
@@ -88,16 +71,16 @@ namespace Unifred
 		private bool _IsScrollBarEvent()
 		{
 			var mouse_position = Event.current.mousePosition;
-			var space = styles[(int)StyleType.Entire].margin.right + styles[(int)StyleType.Entire].padding.right
-				+ styles[(int)StyleType.Body].margin.right + styles[(int)StyleType.Body].padding.right;
-			var is_scrollbar_event = feature.GetWindowSize().x - space - skin.verticalScrollbar.fixedWidth < mouse_position.x
+			var space = Styles.Entire.margin.right + Styles.Entire.padding.right
+				+ Styles.Body.margin.right + Styles.Body.padding.right;
+			var is_scrollbar_event = feature.GetWindowSize().x - space - Styles.BodyVerticalScrollBar.fixedWidth < mouse_position.x
 				&& mouse_position.x < feature.GetWindowSize().x - space;
 			return is_scrollbar_event;
 		}
 
 		private void _DisplayEntire()
 		{
-			GUILayout.BeginVertical(styles[(int)StyleType.Entire]);
+			GUILayout.BeginVertical(Styles.Entire);
 
 			_DisplayHeader();
 
@@ -139,12 +122,12 @@ namespace Unifred
 
 		private float _GetRowHeight()
 		{
-			StyleType[] styleIndexes = {
-				StyleType.BodyNormalRow,
-				StyleType.BodySelectedRow,
+			GUIStyle[] styleIndexes = {
+				Styles.BodyNormalRow,
+				Styles.BodySelectedRow,
 			};
 
-			float offset = styleIndexes.Select(index => styles[(int)index])
+			float offset = styleIndexes
 				.Sum(style => style.margin.top + style.margin.bottom + style.padding.top + style.padding.bottom);
 			return offset + feature.GetRowHeight();
 		}
@@ -155,32 +138,29 @@ namespace Unifred
 		/// <returns>The get row start height.</returns>
 		private float _GetRowStartHeight()
 		{
-			StyleType[] styleIndexes = {
-				StyleType.Header,
-				StyleType.HeaderBottom,
-				StyleType.HeaderBottomSearchBox,
-				StyleType.HeaderTop,
-				StyleType.HeaderTopDescription,
+			GUIStyle[] styleIndexes = {
+				Styles.Header,
+				Styles.HeaderBottom,
+				Styles.HeaderBottomSearchBox,
+				Styles.HeaderTop,
+				Styles.HeaderTopDescription,
 			};
 
-			float offset = styleIndexes.Select(index => styles[(int)index])
+			float offset = styleIndexes
 				.Sum(style => style.margin.top + style.margin.bottom + style.padding.top + style.padding.bottom);
 
-			StyleType[] stringStyleIndexes = {
-				StyleType.HeaderBottomSearchBox,
-				StyleType.HeaderTopDescription,
+			GUIStyle[] stringStyleIndexes = {
+				Styles.HeaderBottomSearchBox,
+				Styles.HeaderTopDescription,
 			};
 			offset += stringStyleIndexes
-				.Select(index => styles[(int)index])
 				.Sum(style => style.CalcSize(new GUIContent(searchWord)).y );
 
-			StyleType[] topStyleIndexes = {
-				StyleType.Entire,
-				StyleType.Body,
+			GUIStyle[] topStyleIndexes = {
+				Styles.Entire,
+				Styles.Body,
 			};
-			offset += topStyleIndexes
-				.Select(index => styles[(int)index])
-				.Sum(style => style.margin.top + style.padding.top);
+			offset += topStyleIndexes.Sum(style => style.margin.top + style.padding.top);
 			return offset + styleIndexes.Count();
 		}
 
@@ -388,15 +368,15 @@ namespace Unifred
 		/// </summary>
 		private void _DisplayCandidate()
 		{
-			GUILayout.BeginVertical(styles[(int)StyleType.Body]);
+			GUILayout.BeginVertical(Styles.Body);
 			if (isScrollToSelected) {
 				scrollPosition = _CulcScrollPosition();
 				isScrollToSelected = false;
 			}
 			scrollPosition = EditorGUILayout.BeginScrollView(
 				scrollPosition,
-			    skin.horizontalScrollbar,
-			    skin.verticalScrollbar,
+			    Styles.BodyHorizontalScrollBar,
+			    Styles.BodyVerticalScrollBar,
 				null
 			);
 
@@ -432,7 +412,7 @@ namespace Unifred
 			for (int i = offset ; i < offset + count ; ++i) {
 				is_selected = uniq_selected_list.Contains(i);
 				if (!is_selected_before && is_selected) {
-					GUILayout.BeginVertical(styles[(int)StyleType.BodySelectedGroup]);
+					GUILayout.BeginVertical(Styles.BodySelectedGroup);
 				}
 				else if (is_selected_before && !is_selected) {
 					GUILayout.EndVertical();
@@ -440,8 +420,7 @@ namespace Unifred
 
 				is_selected_before = is_selected;
 
-				GUIStyle style = (is_selected)?
-					styles[(int)StyleType.BodySelectedRow]:styles[(int)StyleType.BodyNormalRow];
+				GUIStyle style = (is_selected)? Styles.BodySelectedRow:Styles.BodyNormalRow;
 
 				T candidate = candidateList.ElementAt(i);
 	            GUILayout.BeginHorizontal(style);
@@ -490,7 +469,7 @@ namespace Unifred
 		
 		private void _DisplayHeader()
 		{
-			GUILayout.BeginVertical(styles[(int)StyleType.Header]);
+			GUILayout.BeginVertical(Styles.Header);
 
 			//header top
 			string header_label = string.Format("({0} / {1}) {2}",
@@ -498,20 +477,21 @@ namespace Unifred
                 candidateList.Count(),
 			    feature.GetDescription()
             );
-			GUILayout.BeginHorizontal(styles[(int)StyleType.HeaderTop]);
-			EditorGUILayout.LabelField(header_label, styles[(int)StyleType.HeaderTopDescription]);
+			GUILayout.BeginHorizontal(Styles.HeaderTop);
+			EditorGUILayout.LabelField(header_label, Styles.HeaderTopDescription);
+
 			EditorGUILayout.Space();
-			isExecuteFromMouse = GUILayout.Button("execute", styles[(int)StyleType.HeaderTopExecuteButton]);
+			isExecuteFromMouse = GUILayout.Button("execute", Styles.HeaderTopExecuteButton);
 			GUILayout.EndHorizontal();
 
 			//header bottom
 			const string controlName = "search_word";
 			GUI.SetNextControlName(controlName);
             GUI.FocusControl(controlName);
-			GUILayout.BeginHorizontal(styles[(int)StyleType.HeaderBottom]);
+			GUILayout.BeginHorizontal(Styles.HeaderBottom);
 			searchWord = GUILayout.TextField(
 				(searchWord ?? ""),
-				styles[(int)StyleType.HeaderBottomSearchBox],
+				Styles.HeaderBottomSearchBox,
 				GUILayout.ExpandWidth(true)
 			);
 			_MakeCursorEndOfText();
@@ -548,9 +528,6 @@ namespace Unifred
 			this.feature = instance;
 			instance.OnInit();
 			onGuiOnceAction = () => {_ResizeWindow();};
-
-			skin = Resources.Load("Unifred/CustomeStyles", typeof(GUISkin)) as GUISkin;
-			styles = skin.customStyles;
 
 			UnifredWindow.OnGUIAction = OnGUI;
 		}
