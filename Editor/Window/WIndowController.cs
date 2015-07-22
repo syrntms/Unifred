@@ -183,8 +183,7 @@ namespace Unifred
 		/// </summary>
 		private void _UpdateSelectedByMouse()
 		{
-			int index = _GetCandidateIndexOnMouse();
-			bool isRowClicked = index >= 0 && !_IsScrollBarEvent();
+			bool isRowClicked = !_IsScrollBarEvent() && _GetRowStartHeight() < Input.GetMousePosition().y;
 
 			if (!Input.IsMouseDown() || !isRowClicked) {
 				return;
