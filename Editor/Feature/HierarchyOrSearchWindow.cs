@@ -56,7 +56,18 @@ namespace Unifred
 
 			foreach (var gameobject in gameobjects) {
 				bool is_contain = words.Any(
-					(word_unit) => {return gameobject.name.IndexOf(word_unit, StringComparison.OrdinalIgnoreCase) >= 0;}
+					(word_unit) => {
+						var is_in_name = gameobject.name.IndexOf(word_unit, StringComparison.OrdinalIgnoreCase) >= 0;
+						var is_in_component = gameobject.GetComponents<Component>().Any(
+							component => {
+								if (component == null) {
+									return false;
+								}
+								return component.GetType().Name.IndexOf(word_unit, StringComparison.OrdinalIgnoreCase) >= 0;
+							}
+						);
+						return is_in_name || is_in_component;
+					}
 				);
 				if (!is_contain) {
 					continue;
