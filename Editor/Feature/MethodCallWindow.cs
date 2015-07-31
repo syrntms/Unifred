@@ -95,7 +95,8 @@ namespace Unifred
 			string[] param_list = word.Split(new char[]{','}, StringSplitOptions.RemoveEmptyEntries);
 			foreach (var item in list) {
 				object[] real_param_list = _MakeParams(param_list, item.method.GetParameters());
-				item.method.Invoke(item.component, real_param_list);
+				var ret = item.method.Invoke(item.component, real_param_list);
+				Debug.Log("method return" + ret);
 			}
 		}
 
