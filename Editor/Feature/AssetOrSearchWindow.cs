@@ -45,7 +45,7 @@ namespace Unifred
 
 		public override string GetDescription()
 		{
-			return "input asset name you want <color=yellow>OR</color> search";
+			return "input asset name you want <color=white>OR</color> search";
 		}
 
 		public override bool IsMultipleSelect()

@@ -30,7 +30,7 @@ namespace Unifred.Feature
 		public override string GetDescription()
 		{
 			if (Selection.activeGameObject == null) {
-				return "<color=red>select game object you want to copy</color>";
+				return "<color=white>select game object you want to copy</color>";
 			}
 			return "input component name you wanna to copy";
 		}

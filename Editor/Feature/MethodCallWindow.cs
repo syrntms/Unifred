@@ -74,7 +74,7 @@ namespace Unifred
 				var last_namespace_index = type_name.LastIndexOf('.');
 				var type_name_without_namespace = type_name.Substring(last_namespace_index + 1);
 
-				string open_tag  = (param_index == current_param_index)? "<color=yellow>":"";
+				string open_tag  = (param_index == current_param_index)? "<color=white>":"";
 				string close_tag = (param_index == current_param_index)? "</color>":"";
 				param_desc += open_tag + type_name_without_namespace + close_tag;
 

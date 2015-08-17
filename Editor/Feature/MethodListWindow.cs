@@ -37,7 +37,7 @@ namespace Unifred
 		public override string GetDescription()
 		{
 			bool is_selected = Selection.gameObjects.Count() > 0;
-			return is_selected? "input method name":"<color=red> select gameobject</color>";
+			return is_selected? "input method name":"<color=white> select gameobject</color>";
 		}
 
 		public override bool IsMultipleSelect()

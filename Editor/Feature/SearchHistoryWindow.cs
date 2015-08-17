@@ -87,14 +87,14 @@ namespace Unifred.Feature
 			switch (candidate.mode){
 			case SearchHistoryObject.SearchMode.AssetAndSearch:
 			case SearchHistoryObject.SearchMode.AssetOrSearch:
-				color = "blue";
+				color = "yellow";
 				break;
 			case SearchHistoryObject.SearchMode.HierarchyOrSearch:
 			case SearchHistoryObject.SearchMode.HierarchyAndSearch:
 				color = "green";
 				break;
 			default:
-				color = "black";
+				color = "white";
 				break;
 			}
 			var candidate_label = string.Format("<color={0}>{1}</color> {2}", color, candidate.mode, candidate.input);

@@ -473,15 +473,16 @@ namespace Unifred
 			GUILayout.BeginVertical(Styles.Header);
 
 			//header top
-			string header_label = string.Format("({0} / {1}) {2}",
+			string header_label = string.Format("<color=#00AFFF>(<color=#CC6600>{0}</color> / {1}) {2}</color>",
 				IntRange.Split(selectedList).Count(),
-                candidateList.Count(),
+	                candidateList.Count(),
 			    feature.GetDescription()
             );
 			GUILayout.BeginHorizontal(Styles.HeaderTop);
 			EditorGUILayout.LabelField(header_label, Styles.HeaderTopDescription);
 
 			EditorGUILayout.Space();
+
 			isExecuteFromMouse = GUILayout.Button("execute", Styles.HeaderTopExecuteButton);
 			GUILayout.EndHorizontal();
 

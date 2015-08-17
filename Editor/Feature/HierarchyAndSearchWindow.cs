@@ -34,7 +34,7 @@ namespace Unifred
 
 		public override string GetDescription()
 		{
-			return "input gameobject name you want <color=yellow> AND </color> search";
+			return "input gameobject name you want <color=white> AND </color> search";
 		}
 
 		public override bool IsMultipleSelect()
