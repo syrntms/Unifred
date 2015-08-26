@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEditor;
@@ -81,7 +81,8 @@ namespace Unifred.Feature
 			result_list.ForEach(
 				pasteObject => {
 					var component = Selection.activeGameObject.GetComponent(pasteObject.componentType);
-					if (component == null) {
+					var is_add = component == null || Input.IsPressedPasteAsNew();
+					if (is_add) {
 						component = Selection.activeGameObject.AddComponent(pasteObject.componentType);
 					}
 					_PasteSerialized(component, pasteObject.properties);

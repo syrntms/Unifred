@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Unifred
 {
@@ -36,6 +36,11 @@ namespace Unifred
 		}
 
 		public static bool IsPressedOpenKey()
+		{
+			return _IsPlatformMac()? Event.current.command:Event.current.control;
+		}
+
+		public static bool IsPressedPasteAsNew()
 		{
 			return _IsPlatformMac()? Event.current.command:Event.current.control;
 		}
