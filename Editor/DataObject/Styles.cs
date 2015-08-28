@@ -96,6 +96,16 @@ namespace Unifred
 			BodyHorizontalScrollBar = GUIStyle.none;
 		}
 
+		public static void CleanTexture()
+		{
+			Texture2D[] targets = {
+				Entire.normal.background,
+				BodySelectedRow.normal.background,
+				BodyVerticalScrollBar.normal.background,
+			};
+			targets.ForEach(target => GameObject.DestroyImmediate(target));
+		}
+
 		private static void _InitScrollbarGUIStyle ()
 		{
 			string scrollbar_name = "unifredscrollbar";

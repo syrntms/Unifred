@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEditor;
@@ -532,6 +532,7 @@ namespace Unifred
 			onGuiOnceAction = () => {_ResizeWindow(); Styles.Setup();};
 
 			UnifredWindow.OnGUIAction = OnGUI;
+			UnifredWindow.OnDestroyAction = () => {Styles.CleanTexture();};
 		}
 	}
 }
