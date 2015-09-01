@@ -99,6 +99,12 @@ namespace Unifred.Feature
 
 			while (iterator.Next(true)) {
 
+				if (iterator.propertyPath.Contains("m_Children")
+				    || iterator.propertyPath.Contains("m_Father")
+			    ) {
+					continue;
+				}
+
 				switch (iterator.propertyType) {
 				case SerializedPropertyType.AnimationCurve:
 					iterator.animationCurveValue = (AnimationCurve)(SerializableAnimationCurve)properties[iterator.propertyPath];
