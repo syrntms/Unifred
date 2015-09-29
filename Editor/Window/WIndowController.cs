@@ -504,12 +504,12 @@ namespace Unifred
 		private void _MakeCursorEndOfText()
 		{
 			var editor = (TextEditor) GUIUtility.GetStateObject(typeof (TextEditor), GUIUtility.keyboardControl);
-#if UNITY_5_2
-			editor.cursorIndex = searchWord.Length;
-			editor.SelectNone();
-#else
+#if UNITY_4 || UNITY_5_0 || UNITY_5_1
 			editor.pos = searchWord.Length;
 			editor.selectPos = searchWord.Length;
+#else
+			editor.cursorIndex = searchWord.Length;
+			editor.SelectNone();
 #endif
 		}
 
