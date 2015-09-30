@@ -66,7 +66,9 @@ namespace Unifred
 					var methods = component.GetType().GetMethods(
 						BindingFlags.NonPublic
 						| BindingFlags.Public
-						| BindingFlags.Instance);
+						| BindingFlags.Instance
+						| BindingFlags.Static
+						);
 
 					foreach (var method in methods) {
 						var item = new MethodListObject();
