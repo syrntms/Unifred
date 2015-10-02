@@ -74,6 +74,11 @@ namespace Unifred
 			return Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.Escape;
 		}
 
+		public static bool IsPressedCommandKey()
+		{
+			return _IsPlatformMac()? Event.current.command:Event.current.control;
+		}
+
 		public static bool IsPressedDoneKey()
 		{
 			return Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.Return;

@@ -8,7 +8,7 @@ using UnityEditor;
 using UnityEngine;
 using Object = System.Object;
 
-namespace Unifred
+namespace Unifred.Feature
 {
 	public class MethodCallWindow : UnifredWindowController<MethodCallObject>
 	{
@@ -123,7 +123,7 @@ namespace Unifred
 			if (has_params) {
 				param_list  = new object[param_length];
 				for (int i = 0; i < param_length ; i++) {
-					param_list[i] = _MakeValue(string_params[i], real_types[i]);
+					param_list[i] = ScriptUtility.MakeValue(string_params[i], real_types[i]);
 //					Debug.Log(
 //						"@input : " 	+ string_params[i] +
 //						"@type : " 		+ real_types[i].ToString() +
@@ -136,36 +136,6 @@ namespace Unifred
 		}
 
 		private static List<MethodCallObject> list = new List<MethodCallObject>();
-
-		private static Object _MakeValue(string value, Type type)
-		{
-			string source = @"
-				using UnityEngine;
-				public class ValueMaker
-				{
-				    public static " + type.ToString() + @" Eval()
-				    {
-						return " + value + @";
-				    }
-				}";
-			var provider = new CSharpCodeProvider();
-			var paramater = new CompilerParameters();
-			paramater.GenerateInMemory = true;
-			//add unity engine location
-			paramater.ReferencedAssemblies.Add(typeof(MonoBehaviour).Assembly.Location);
-
-			ICodeCompiler compiler = provider.CreateCompiler();
-
-			CompilerResults result = compiler.CompileAssemblyFromSource(paramater, source);
-
-			Assembly asm = result.CompiledAssembly;
-			foreach (var err in result.Errors) {
-				Debug.Log("eval paramater has some error message:" + err.ToString());
-			}
-			Type t = asm.GetType("ValueMaker");
-
-			return t.InvokeMember("Eval", BindingFlags.InvokeMethod, null, null, null);
-		}
 
 		public override float GetRowHeight()
 		{

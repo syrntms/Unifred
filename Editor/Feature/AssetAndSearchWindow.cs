@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEngine;
 using Object = System.Object;
 
-namespace Unifred
+namespace Unifred.Feature
 {
 
 	public class AssetAndSearchWindow : UnifredWindowController<AssetAndSearchObject>

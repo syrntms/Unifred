@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace Unifred
+namespace Unifred.Feature
 {
 	public class MethodListWindow : UnifredWindowController<MethodListObject>
 	{
@@ -57,6 +57,7 @@ namespace Unifred
 
 			var words = word.Split(new char[]{' '}, StringSplitOptions.RemoveEmptyEntries);
 			if (words.Length <= 0) {
+				return result;
 			}
 
 			foreach (var selected in selected_objects) {

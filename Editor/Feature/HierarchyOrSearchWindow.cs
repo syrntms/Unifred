@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace Unifred
+namespace Unifred.Feature
 {
 
 	public class HierarchyOrSearchWindow : UnifredWindowController<HierarchyOrSearchObject>
