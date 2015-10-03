@@ -27,7 +27,7 @@ namespace Unifred
 					.ToArray()
 				);
 			}
-			catch (Exception e) {
+			catch (Exception) {
 				return string.Empty;
 			}
 		}
@@ -46,7 +46,7 @@ namespace Unifred
 				    .ToArray()
 				);
 			}
-			catch (Exception e) {
+			catch (Exception) {
 				return string.Empty;
 			}
 		}
