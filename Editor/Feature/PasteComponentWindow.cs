@@ -94,8 +94,9 @@ namespace Unifred.Feature
 			Component component,
 			Dictionary<string, System.Object> properties
 		) {
-			var toSerialized = new SerializedObject(component);
-			var iterator = toSerialized.GetIterator();
+			var toSerialized	= new SerializedObject(component);
+			var iterator		= toSerialized.GetIterator();
+			var blackList		= getPropertyPathBlackList();
 
 			while (iterator.Next(true)) {
 
@@ -103,6 +104,15 @@ namespace Unifred.Feature
 				    || iterator.propertyPath.Contains("m_Father")
 			    ) {
 					continue;
+				}
+
+				IEnumerable<string> blackListPathes;
+				bool isBlackListExist = blackList.TryGetValue(iterator.propertyType, out blackListPathes);
+				if (isBlackListExist) {
+					bool isBlackList = blackListPathes.Any(path => iterator.propertyPath.Contains(path));
+					if (isBlackList) {
+						continue;
+					}
 				}
 
 				switch (iterator.propertyType) {
@@ -128,26 +138,15 @@ namespace Unifred.Feature
 					iterator.floatValue = (float)properties[iterator.propertyPath];
 					break;
 				case SerializedPropertyType.Integer:
-					// error occured.
-					// [CheckConsistency: GameObject does not reference component MonoBehaviour. Fixing.]
-					// and often unity down.
-					if (iterator.propertyPath.Contains("m_GameObject.m_FileID")) {
-						break;
-					}
 					iterator.intValue = (int)properties[iterator.propertyPath];
 					break;
 				case SerializedPropertyType.LayerMask:
 					iterator.intValue = (int)properties[iterator.propertyPath];
 					break;
 				case SerializedPropertyType.ObjectReference:
-					// error occured.
-					// [CheckConsistency: GameObject does not reference component MonoBehaviour. Fixing.]
-					// and often unity down.
-					if (iterator.propertyPath.Contains("m_GameObject")) {
-						break;
-					}
-					var id = (int)properties[iterator.propertyPath];
-					iterator.objectReferenceInstanceIDValue = id;
+					// skip object reference copy for avoiding error
+//					var id = (int)properties[iterator.propertyPath];
+//					iterator.objectReferenceInstanceIDValue = id;
 					break;
 				case SerializedPropertyType.Quaternion:
 					iterator.quaternionValue = (Quaternion)(SerializableQuaternion)properties[iterator.propertyPath];
@@ -174,6 +173,7 @@ namespace Unifred.Feature
 				}
 			}
 			toSerialized.ApplyModifiedProperties();
+			toSerialized.UpdateIfDirtyOrScript();
 		}
 
 		public override float GetRowHeight()
@@ -182,6 +182,28 @@ namespace Unifred.Feature
 				+ textGuiStyle.margin.bottom + textGuiStyle.margin.top;
 		}
 
+		private Dictionary<SerializedPropertyType, IEnumerable<string>> getPropertyPathBlackList()
+		{
+			return new Dictionary<SerializedPropertyType, IEnumerable<string>>()
+			{
+				{
+					SerializedPropertyType.ObjectReference,
+					new string[] {
+						"m_GameObject",
+						"m_Script",
+						"m_Prefab",
+					}
+				},
+				{
+					SerializedPropertyType.Integer,
+					new string[] {
+						"m_GameObject",
+						"m_Script",
+						"m_Prefab",
+					}
+				},
+			};
+		}
 	}
 
 	public class PasteComponentObject

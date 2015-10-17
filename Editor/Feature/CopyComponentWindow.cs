@@ -14,6 +14,12 @@ namespace Unifred.Feature
 		{
 			ShowWindow(new CopyComponent(), string.Empty);
 		}
+
+		[MenuItem("Unifred/ClearCopiedComponent")]
+		public static void ClearCopiedComponent()
+		{
+			EditorUserSettings.SetConfigValue("CopiedComponentByUnifred", null);
+		}
 	}
 
 	public class CopyComponent : UnifredFeatureBase<CopyComponentObject>
