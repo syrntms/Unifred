@@ -24,6 +24,7 @@ namespace Unifred.Feature
 			new LauncherObject() {ClassType = typeof(HierarchyAndSearchWindow),	Hotkey = "h",	MethodName = "ShowWindow"},
 			new LauncherObject() {ClassType = typeof(MethodListWindow),			Hotkey = "cm",	MethodName = "ShowWindow"},
 			new LauncherObject() {ClassType = typeof(CopyComponentWindow),		Hotkey = "cc",	MethodName = "ShowWindow"},
+			new LauncherObject() {ClassType = typeof(DeleteComponentWindow),	Hotkey = "cd",	MethodName = "ShowWindow"},
 			new LauncherObject() {ClassType = typeof(PasteComponentWindow),		Hotkey = "cp",	MethodName = "ShowWindow"},
 			new LauncherObject() {ClassType = typeof(ValueListWindow),			Hotkey = "cv",	MethodName = "ShowWindow"},
 			new LauncherObject() {ClassType = typeof(SearchHistoryWindow),		Hotkey = "uh",	MethodName = "ShowWindow"},
