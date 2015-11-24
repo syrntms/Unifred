@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEditor;
@@ -9,8 +9,7 @@ namespace Unifred.Feature
 
 	public class PasteComponentWindow : UnifredWindowController<PasteComponentObject>
 	{
-		[MenuItem("Unifred/PasteComponent %]")]
-		public static void PasteComponent()
+		public static void ShowWindow()
 		{
 			ShowWindow(new PasteComponent(), string.Empty);
 		}
@@ -35,9 +34,9 @@ namespace Unifred.Feature
 			return "input component name you wanna to copy";
 		}
 
-		public override bool IsMultipleSelect()
+		public override CandidateSelectMode GetSelectMode()
 		{
-			return true;
+			return CandidateSelectMode.Multiple;
 		}
 
 		public override IEnumerable<PasteComponentObject> UpdateCandidate(string input)

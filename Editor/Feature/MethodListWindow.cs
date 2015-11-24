@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
@@ -9,14 +9,12 @@ namespace Unifred.Feature
 {
 	public class MethodListWindow : UnifredWindowController<MethodListObject>
 	{
-
-		[MenuItem("Unifred/MethodList %y")]
-		public static void SearchFromSelection()
+		public static void ShowWindow()
 		{
 			ShowWindow(new MethodList(), string.Empty);
 		}
 
-		public static void SearchFromSelection(string initial_word)
+		public static void ShowWindow(string initial_word)
 		{
 			ShowWindow(new MethodList(), initial_word);
 		}
@@ -40,9 +38,9 @@ namespace Unifred.Feature
 			return is_selected? "input method name":"<color=white> select gameobject</color>";
 		}
 
-		public override bool IsMultipleSelect()
+		public override CandidateSelectMode GetSelectMode()
 		{
-			return true;
+			return CandidateSelectMode.Multiple;
 		}
 
 		public override IEnumerable<MethodListObject> UpdateCandidate(string word)
@@ -104,7 +102,7 @@ namespace Unifred.Feature
 		public override void Select(string word, IEnumerable<MethodListObject> result_list)
 		{
 			EditorApplication.delayCall += () => {
-				MethodCallWindow.ShowMethod(result_list);
+				MethodCallWindow.ShowWindow(result_list);
 			};
 		}
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Reflection;
 using System.CodeDom.Compiler;
@@ -12,7 +12,7 @@ namespace Unifred.Feature
 {
 	public class ChangeValueWindow : UnifredWindowController<ChangeValueObject>
 	{
-		public static void ChangeValue(ChangeValueObject data)
+		public static void ShowWindow(ChangeValueObject data)
 		{
 			ChangeValue changer = new ChangeValue();
 			changer.SetCandidate(data);
@@ -37,9 +37,9 @@ namespace Unifred.Feature
 			return "input value";
 		}
 
-		public override bool IsMultipleSelect()
+		public override CandidateSelectMode GetSelectMode()
 		{
-			return false;
+			return CandidateSelectMode.Single;
 		}
 
 		public override IEnumerable<ChangeValueObject> UpdateCandidate(string word)

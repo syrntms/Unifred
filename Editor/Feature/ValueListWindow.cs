@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Reflection;
 using System.CodeDom.Compiler;
@@ -12,8 +12,7 @@ namespace Unifred.Feature
 {
 	public class ValueListWindow : UnifredWindowController<ValueListObject>
 	{
-		[MenuItem("Unifred/ValueList %@")]
-		public static void ShowValue()
+		public static void ShowWindow()
 		{
 			ShowWindow(new ValueList(), string.Empty);
 		}
@@ -36,9 +35,9 @@ namespace Unifred.Feature
 			return is_selected? "input value name":"<color=white>select gameobject</color>";
 		}
 
-		public override bool IsMultipleSelect()
+		public override CandidateSelectMode GetSelectMode()
 		{
-			return false;
+			return CandidateSelectMode.Single;
 		}
 
 		public override IEnumerable<ValueListObject> UpdateCandidate(string word)
@@ -169,7 +168,7 @@ namespace Unifred.Feature
 				changeValueObject.field		= result.field;
 				changeValueObject.property	= result.property;
 				changeValueObject.name		= result.name;
-				ChangeValueWindow.ChangeValue(changeValueObject);
+				ChangeValueWindow.ShowWindow(changeValueObject);
 			};
 		}
 

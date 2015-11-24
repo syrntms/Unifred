@@ -10,8 +10,8 @@ namespace Unifred
 	{
 		#region edit here of impl class, if you want new feature
 		public virtual string GetDescription() {return string.Empty;}
-		public virtual bool IsMultipleSelect() {return false;}
-		public virtual Vector2 GetWindowSize() {return new Vector2(600, 400);}
+		public virtual CandidateSelectMode GetSelectMode() {return CandidateSelectMode.Single;}
+		public virtual Vector2 GetWindowSize() {return new Vector2(Consts.DEFAULT_WIDTH, Consts.DEFAULT_HEIGHT);}
 		public virtual void OnDestroy() {}
 		public virtual void OnInit() {}
 
@@ -45,8 +45,8 @@ namespace Unifred
 			history.Reverse();
 			var unique_history = history.Distinct( new HistoryLogCompare() );
 
-			if (unique_history.Count() > Config.HISTORY_COUNT) {
-				unique_history = unique_history.Skip(unique_history.Count() - Config.HISTORY_COUNT);
+			if (unique_history.Count() > Consts.HISTORY_COUNT) {
+				unique_history = unique_history.Skip(unique_history.Count() - Consts.HISTORY_COUNT);
 			}
 			string serialized_history = SerializeUtility.SerializeObject<List<KeyValuePair<string, string>>>(unique_history.Reverse().ToList());
 			EditorUserSettings.SetConfigValue("UnifredHistory", serialized_history);

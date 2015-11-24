@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEditor;
@@ -66,6 +66,13 @@ namespace Unifred
 				window.Close();
 				return;
 			}
+
+			if (_IsSelectBySingleImmediately()) {
+				_SetupSelectedListBySingleImmediately();
+				_OnPressedDoneKey();
+				window.Close();
+				return;
+			}
 		}
 
 		private bool _IsScrollBarEvent()
@@ -105,7 +112,7 @@ namespace Unifred
 		private void _ClampSelected()
 		{
 			IntRange current_selected = (selectedList.Count == 0)? null : selectedList.Last();
-			if (!feature.IsMultipleSelect()) {
+			if (feature.GetSelectMode() != CandidateSelectMode.Multiple) {
 				if (selectedList.Count > 1) {
 					selectedList.Clear();
 					selectedList.Add(current_selected);
@@ -189,7 +196,7 @@ namespace Unifred
 				return;
 			}
 
-			if (Input.IsPressedExpandKey() && feature.IsMultipleSelect()) {
+			if (Input.IsPressedExpandKey() && feature.GetSelectMode() == CandidateSelectMode.Multiple) {
 				_UpdateSelectedByMouseWithExpand();
 			}
 			else {
@@ -539,5 +546,22 @@ namespace Unifred
 			UnifredWindow.OnGUIAction = OnGUI;
 			UnifredWindow.OnDestroyAction = () => {Styles.CleanTexture();};
 		}
+
+		private bool _IsSelectBySingleImmediately()
+		{
+			if (feature.GetSelectMode() != CandidateSelectMode.SingleImmediately) {
+				return false;
+			}
+			return candidateList.Count() == 1;
+		}
+
+		private void _SetupSelectedListBySingleImmediately()
+		{
+			IntRange range = new IntRange();
+			range.from = range.to = 0;
+			selectedList.Clear();
+			selectedList.Add(range);
+		}
+
 	}
 }

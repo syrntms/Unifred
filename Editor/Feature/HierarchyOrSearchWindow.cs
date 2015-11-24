@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEditor;
@@ -9,12 +9,12 @@ namespace Unifred.Feature
 
 	public class HierarchyOrSearchWindow : UnifredWindowController<HierarchyOrSearchObject>
 	{
-		public static void SearchFromHierarchy()
+		public static void ShowWindow()
 		{
 			ShowWindow(new HierarchyOrSearch(), string.Empty);
 		}
 
-		public static void SearchFromHierarchy(string initial_word)
+		public static void ShowWindow(string initial_word)
 		{
 			ShowWindow(new HierarchyOrSearch(), initial_word);
 		}
@@ -36,9 +36,9 @@ namespace Unifred.Feature
 			return "input gameobject name you want <color=white> OR </color> search";
 		}
 
-		public override bool IsMultipleSelect()
+		public override CandidateSelectMode GetSelectMode()
 		{
-			return true;
+			return CandidateSelectMode.Multiple;
 		}
 
 		public override IEnumerable<HierarchyOrSearchObject> UpdateCandidate(string word)
@@ -93,7 +93,7 @@ namespace Unifred.Feature
 		{
 			if (string.IsNullOrEmpty(word)) {
 				EditorApplication.delayCall += () => {
-					HierarchyAndSearchWindow.SearchFromHierarchy();
+					HierarchyAndSearchWindow.ShowWindow();
 				};
 			}
 			Selection.objects = result_list.Select((t) => {return t.target;}).Cast<GameObject>().ToArray();

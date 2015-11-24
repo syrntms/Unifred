@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Reflection;
 using System.CodeDom.Compiler;
@@ -12,7 +12,7 @@ namespace Unifred.Feature
 {
 	public class MethodCallWindow : UnifredWindowController<MethodCallObject>
 	{
-		public static void ShowMethod(IEnumerable<MethodListObject> list)
+		public static void ShowWindow(IEnumerable<MethodListObject> list)
 		{
 			MethodCall.SetList(list);
 			ShowWindow(new MethodCall(), string.Empty);
@@ -48,9 +48,9 @@ namespace Unifred.Feature
 			return "input parameter of methods";
 		}
 
-		public override bool IsMultipleSelect()
+		public override CandidateSelectMode GetSelectMode()
 		{
-			return false;
+			return CandidateSelectMode.Single;
 		}
 
 		public override IEnumerable<MethodCallObject> UpdateCandidate(string word)

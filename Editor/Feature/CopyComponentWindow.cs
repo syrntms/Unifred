@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEditor;
@@ -9,8 +9,7 @@ namespace Unifred.Feature
 
 	public class CopyComponentWindow : UnifredWindowController<CopyComponentObject>
 	{
-		[MenuItem("Unifred/CopyComponent %[")]
-		public static void CopyComponent()
+		public static void ShowWindow()
 		{
 			ShowWindow(new CopyComponent(), string.Empty);
 		}
@@ -41,9 +40,9 @@ namespace Unifred.Feature
 			return "input component name you wanna to copy";
 		}
 
-		public override bool IsMultipleSelect()
+		public override CandidateSelectMode GetSelectMode()
 		{
-			return true;
+			return CandidateSelectMode.Multiple;
 		}
 
 		private Dictionary<string, System.Object> _SerializedObjectToSerializable(
@@ -159,8 +158,8 @@ namespace Unifred.Feature
 
 			histories = histories.Concat(result_list);
 
-			if (histories.Count() > Config.COPYCOMPONENT_HISTORY_COUNT) {
-				histories = histories.Skip(histories.Count() - Config.COPYCOMPONENT_HISTORY_COUNT);
+			if (histories.Count() > Consts.COPYCOMPONENT_HISTORY_COUNT) {
+				histories = histories.Skip(histories.Count() - Consts.COPYCOMPONENT_HISTORY_COUNT);
 			}
 
 			var updated_history_data = SerializeUtility.SerializeObject<List<CopyComponentObject>>(histories.ToList());

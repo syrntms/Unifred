@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEditor;
@@ -10,13 +10,12 @@ namespace Unifred.Feature
 
 	public class AssetAndSearchWindow : UnifredWindowController<AssetAndSearchObject>
 	{
-		[MenuItem("Unifred/SearchAsset %t")]
-		public static void SearchFromAsset()
+		public static void ShowWindow()
 		{
 			ShowWindow(new AssetAndSearch(), string.Empty);
 		}
 
-		public static void SearchFromAsset(string initial_word)
+		public static void ShowWindow(string initial_word)
 		{
 			ShowWindow(new AssetAndSearch(), initial_word);
 		}
@@ -50,9 +49,9 @@ namespace Unifred.Feature
 			return "input asset name you want <color=white>AND</color> search";
 		}
 
-		public override bool IsMultipleSelect()
+		public override CandidateSelectMode GetSelectMode()
 		{
-			return true;
+			return CandidateSelectMode.Multiple;
 		}
 
 		public override IEnumerable<AssetAndSearchObject> UpdateCandidate(string input)
@@ -104,7 +103,7 @@ namespace Unifred.Feature
 		{
 			if (string.IsNullOrEmpty(word)) {
 				EditorApplication.delayCall += () => {
-					AssetOrSearchWindow.SearchFromAsset();
+					AssetOrSearchWindow.ShowWindow();
 				};
 				return;
 			}

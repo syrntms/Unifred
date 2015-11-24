@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEditor;
@@ -9,8 +9,7 @@ namespace Unifred.Feature
 
 	public class SearchHistoryWindow : UnifredWindowController<SearchHistoryObject>
 	{
-		[MenuItem("Unifred/SearchHistory %^")]
-		public static void SearchFromHistory()
+		public static void ShowWindow()
 		{
 			ShowWindow(new SearchHistory(), string.Empty);
 		}
@@ -32,9 +31,9 @@ namespace Unifred.Feature
 			return "input word you wanna search";
 		}
 
-		public override bool IsMultipleSelect()
+		public override CandidateSelectMode GetSelectMode()
 		{
-			return false;
+			return CandidateSelectMode.Single;
 		}
 
 		private IEnumerable<SearchHistoryObject> _GetAllHistory()
@@ -107,22 +106,22 @@ namespace Unifred.Feature
 			switch (result.mode) {
 			case SearchHistoryObject.SearchMode.AssetOrSearch:
 				EditorApplication.delayCall += () => {
-					AssetOrSearchWindow.SearchFromAsset(result.input);
+					AssetOrSearchWindow.ShowWindow(result.input);
 				};
 				break;
 			case SearchHistoryObject.SearchMode.AssetAndSearch:
 				EditorApplication.delayCall += () => {
-					AssetAndSearchWindow.SearchFromAsset(result.input);
+					AssetAndSearchWindow.ShowWindow(result.input);
 				};
 				break;
 			case SearchHistoryObject.SearchMode.HierarchyOrSearch:
 				EditorApplication.delayCall += () => {
-					HierarchyOrSearchWindow.SearchFromHierarchy(result.input);
+					HierarchyOrSearchWindow.ShowWindow(result.input);
 				};
 				break;
 			case SearchHistoryObject.SearchMode.HierarchyAndSearch:
 				EditorApplication.delayCall += () => {
-					HierarchyAndSearchWindow.SearchFromHierarchy(result.input);
+					HierarchyAndSearchWindow.ShowWindow(result.input);
 				};
 				break;
 			}
