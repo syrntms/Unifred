@@ -50,7 +50,6 @@ namespace Unifred.Feature
 
 			return Selection.gameObjects
 				.SelectMany( go => go.GetComponents<Component>() )
-				.Select ( c => { Debug.Log(c.GetType().ToString()); return c;} )
 				.Where( c => words.All( word => c.GetType().ToString().IndexOf(word, StringComparison.OrdinalIgnoreCase) >= 0))
 				.Select( c => new DeleteComponentObject{component = c} );
 		}	
