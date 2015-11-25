@@ -9,7 +9,7 @@ namespace Unifred.Feature
 
 	public class ManipulateComponent
 	{
-		public static void InitializeSerializeField()
+		public static void InitializeField()
 		{
 			bool isSelect = Selection.gameObjects.Count() > 0;
 			if (!isSelect) {

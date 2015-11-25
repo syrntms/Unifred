@@ -29,7 +29,8 @@ namespace Unifred.Feature
 			new LauncherObject() {ClassType = typeof(ValueListWindow),			Hotkey = "cv",	MethodName = "ShowWindow"},
 			new LauncherObject() {ClassType = typeof(SearchHistoryWindow),		Hotkey = "uh",	MethodName = "ShowWindow"},
 			new LauncherObject() {ClassType = typeof(Console),					Hotkey = "dc",	MethodName = "Clear"},
-			new LauncherObject() {ClassType = typeof(ManipulateComponent),		Hotkey = "ci",	MethodName = "InitializeSerializeField"},
+			new LauncherObject() {ClassType = typeof(ManipulateComponent),		Hotkey = "ci",	MethodName = "InitializeField"},
+			new LauncherObject() {ClassType = typeof(ManipulateInspector),		Hotkey = "il",	MethodName = "SwitchLock"},
 		};
 
 		private static GUIStyle textGuiStyle = new GUIStyle {
