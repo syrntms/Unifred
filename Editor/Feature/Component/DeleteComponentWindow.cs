@@ -43,7 +43,9 @@ namespace Unifred.Feature
 		{
 			List<DeleteComponentObject> result = new List<DeleteComponentObject>();
 			if (string.IsNullOrEmpty(input)) {
-				return result;
+				return Selection.gameObjects
+					.SelectMany (go => go.GetComponents<Component>())
+					.Select (c => new DeleteComponentObject (){ component = c });
 			}
 
 			string[] words = input.Split(new char[]{' '}, StringSplitOptions.RemoveEmptyEntries);
