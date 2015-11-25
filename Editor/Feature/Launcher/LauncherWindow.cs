@@ -28,6 +28,7 @@ namespace Unifred.Feature
 			new LauncherObject() {ClassType = typeof(PasteComponentWindow),		Hotkey = "cp",	MethodName = "ShowWindow"},
 			new LauncherObject() {ClassType = typeof(ValueListWindow),			Hotkey = "cv",	MethodName = "ShowWindow"},
 			new LauncherObject() {ClassType = typeof(SearchHistoryWindow),		Hotkey = "uh",	MethodName = "ShowWindow"},
+			new LauncherObject() {ClassType = typeof(ConsoleClear),				Hotkey = "dc",	MethodName = "ClearConsole"},
 		};
 
 		private static GUIStyle textGuiStyle = new GUIStyle {
