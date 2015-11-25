@@ -40,9 +40,6 @@ namespace Unifred.Feature
 
 		public override string GetDescription()
 		{
-			Dictionary<Type, string> LaunchedFeatureList = new Dictionary<Type, string>() {
-				{typeof(AssetAndSearchWindow), ""},
-			};
 			return "input hotkey";
 		}
 
