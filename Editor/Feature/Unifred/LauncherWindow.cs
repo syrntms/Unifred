@@ -20,17 +20,17 @@ namespace Unifred.Feature
 	public class LauncherFeature : UnifredFeatureBase<LauncherObject>
 	{
 		public IEnumerable<LauncherObject>	LaunchedFeatureObjects = new List<LauncherObject>(){
-			new LauncherObject() {ClassType = typeof(AssetAndSearchWindow),		Hotkey = "ps",	MethodName = "ShowWindow"},
-			new LauncherObject() {ClassType = typeof(HierarchyAndSearchWindow),	Hotkey = "hs",	MethodName = "ShowWindow"},
-			new LauncherObject() {ClassType = typeof(MethodListWindow),			Hotkey = "cm",	MethodName = "ShowWindow"},
-			new LauncherObject() {ClassType = typeof(CopyComponentWindow),		Hotkey = "cc",	MethodName = "ShowWindow"},
-			new LauncherObject() {ClassType = typeof(DeleteComponentWindow),	Hotkey = "cd",	MethodName = "ShowWindow"},
-			new LauncherObject() {ClassType = typeof(PasteComponentWindow),		Hotkey = "cp",	MethodName = "ShowWindow"},
-			new LauncherObject() {ClassType = typeof(ValueListWindow),			Hotkey = "cv",	MethodName = "ShowWindow"},
-			new LauncherObject() {ClassType = typeof(SearchHistoryWindow),		Hotkey = "uh",	MethodName = "ShowWindow"},
-			new LauncherObject() {ClassType = typeof(Console),					Hotkey = "dc",	MethodName = "Clear"},
-			new LauncherObject() {ClassType = typeof(ManipulateComponent),		Hotkey = "ci",	MethodName = "InitializeField"},
-			new LauncherObject() {ClassType = typeof(ManipulateInspector),		Hotkey = "il",	MethodName = "SwitchLock"},
+			new LauncherObject() {ClassType = typeof(AssetAndSearchWindow),		Hotkey = "p : ProjectSearch",		MethodName = "ShowWindow"},
+			new LauncherObject() {ClassType = typeof(HierarchyAndSearchWindow),	Hotkey = "h : HierarchySearch",	MethodName = "ShowWindow"},
+			new LauncherObject() {ClassType = typeof(ManipulateComponent),		Hotkey = "ci : ComponentInitialize",MethodName = "InitializeField"},
+			new LauncherObject() {ClassType = typeof(MethodListWindow),			Hotkey = "cm : ComponentMethod",	MethodName = "ShowWindow"},
+			new LauncherObject() {ClassType = typeof(CopyComponentWindow),		Hotkey = "cc : ComponentCopy",		MethodName = "ShowWindow"},
+			new LauncherObject() {ClassType = typeof(DeleteComponentWindow),	Hotkey = "cd : ComponentDelete",	MethodName = "ShowWindow"},
+			new LauncherObject() {ClassType = typeof(PasteComponentWindow),		Hotkey = "cp : ComponentPaste",		MethodName = "ShowWindow"},
+			new LauncherObject() {ClassType = typeof(ValueListWindow),			Hotkey = "cv : ComponentValue",		MethodName = "ShowWindow"},
+			new LauncherObject() {ClassType = typeof(SearchHistoryWindow),		Hotkey = "u : UnifredHistory",		MethodName = "ShowWindow"},
+			new LauncherObject() {ClassType = typeof(Console),					Hotkey = "d : DebugClear",			MethodName = "Clear"},
+			new LauncherObject() {ClassType = typeof(ManipulateInspector),		Hotkey = "i : InspectorLock",		MethodName = "SwitchLock"},
 		};
 
 		private static GUIStyle textGuiStyle = new GUIStyle {
@@ -67,7 +67,7 @@ namespace Unifred.Feature
 			LauncherObject candidate,
 			bool is_selected
 		) {
-            GUILayout.Label(candidate.Hotkey + ":" + candidate.ClassType.Name, textGuiStyle);
+            GUILayout.Label(candidate.Hotkey, textGuiStyle);
 		}
 
 		public override void Select(string word, IEnumerable<LauncherObject> result_list)
