@@ -2,11 +2,11 @@
 using UnityEditor;
 using System.Collections;
 
-namespace Unifred
+namespace Unifred.Feature
 {
-	public class ConsoleClear : MonoBehaviour
+	public class Console : MonoBehaviour
 	{
-		public static void ClearConsole()
+		public static void Clear()
 		{
 			var logEntries = System.Type.GetType("UnityEditorInternal.LogEntries,UnityEditor.dll");
 			var clearMethod = logEntries.GetMethod("Clear", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public);

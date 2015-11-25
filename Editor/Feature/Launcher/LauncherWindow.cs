@@ -20,15 +20,16 @@ namespace Unifred.Feature
 	public class LauncherFeature : UnifredFeatureBase<LauncherObject>
 	{
 		public IEnumerable<LauncherObject>	LaunchedFeatureObjects = new List<LauncherObject>(){
-			new LauncherObject() {ClassType = typeof(AssetAndSearchWindow),		Hotkey = "a",	MethodName = "ShowWindow"},
-			new LauncherObject() {ClassType = typeof(HierarchyAndSearchWindow),	Hotkey = "h",	MethodName = "ShowWindow"},
+			new LauncherObject() {ClassType = typeof(AssetAndSearchWindow),		Hotkey = "ps",	MethodName = "ShowWindow"},
+			new LauncherObject() {ClassType = typeof(HierarchyAndSearchWindow),	Hotkey = "hs",	MethodName = "ShowWindow"},
 			new LauncherObject() {ClassType = typeof(MethodListWindow),			Hotkey = "cm",	MethodName = "ShowWindow"},
 			new LauncherObject() {ClassType = typeof(CopyComponentWindow),		Hotkey = "cc",	MethodName = "ShowWindow"},
 			new LauncherObject() {ClassType = typeof(DeleteComponentWindow),	Hotkey = "cd",	MethodName = "ShowWindow"},
 			new LauncherObject() {ClassType = typeof(PasteComponentWindow),		Hotkey = "cp",	MethodName = "ShowWindow"},
 			new LauncherObject() {ClassType = typeof(ValueListWindow),			Hotkey = "cv",	MethodName = "ShowWindow"},
 			new LauncherObject() {ClassType = typeof(SearchHistoryWindow),		Hotkey = "uh",	MethodName = "ShowWindow"},
-			new LauncherObject() {ClassType = typeof(ConsoleClear),				Hotkey = "dc",	MethodName = "ClearConsole"},
+			new LauncherObject() {ClassType = typeof(Console),					Hotkey = "dc",	MethodName = "Clear"},
+			new LauncherObject() {ClassType = typeof(ManipulateComponent),		Hotkey = "ci",	MethodName = "InitializeSerializeField"},
 		};
 
 		private static GUIStyle textGuiStyle = new GUIStyle {

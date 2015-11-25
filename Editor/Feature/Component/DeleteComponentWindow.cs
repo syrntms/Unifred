@@ -41,7 +41,6 @@ namespace Unifred.Feature
 
 		public override IEnumerable<DeleteComponentObject> UpdateCandidate(string input)
 		{
-			List<DeleteComponentObject> result = new List<DeleteComponentObject>();
 			if (string.IsNullOrEmpty(input)) {
 				return Selection.gameObjects
 					.SelectMany (go => go.GetComponents<Component>())
