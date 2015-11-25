@@ -116,7 +116,20 @@ namespace Unifred.Feature
 
 			if (Input.IsPressedOpenKey()) {
 				foreach (var obj in Selection.objects) {
-					AssetDatabase.OpenAsset(obj);
+					if (PrefabUtility.GetPrefabType(obj) == PrefabType.Prefab) {
+						GameObject go = null;
+						if (Input.IsPressedShiftKey()) {
+							go = GameObject.Instantiate(obj) as GameObject;
+						}
+						else {
+							go = PrefabUtility.InstantiatePrefab(obj) as GameObject;
+						}
+						go.transform.position = Vector3.zero;
+						go.name = obj.name;
+					}
+					else {
+						AssetDatabase.OpenAsset(obj);
+					}
 				}
 			}
 			else {

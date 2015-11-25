@@ -79,6 +79,11 @@ namespace Unifred
 			return _IsPlatformMac()? Event.current.command:Event.current.control;
 		}
 
+		public static bool IsPressedShiftKey()
+		{
+			return Event.current.shift;
+		}
+
 		public static bool IsPressedDoneKey()
 		{
 			return Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.Return;

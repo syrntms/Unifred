@@ -10,7 +10,7 @@ namespace Unifred.Feature
 {
 	public class LauncherWindow : UnifredWindowController<LauncherObject>
 	{
-		[MenuItem("Unifred/LaunchFeature %t")]
+		[MenuItem("Unifred/LaunchFeature %g")]
 		public static void ShowWindow()
 		{
 			ShowWindow(new LauncherFeature(), string.Empty);
