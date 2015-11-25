@@ -101,42 +101,63 @@ namespace Unifred.Feature
 		public override void Select(string word, IEnumerable<AssetOrSearchObject> result_list)
 		{
 			if (string.IsNullOrEmpty(word)) {
-				EditorApplication.delayCall += () => {
-					AssetAndSearchWindow.ShowWindow();
-				};
+				EditorApplication.delayCall += () => { AssetAndSearchWindow.ShowWindow(); };
 				return;
 			}
 
-			IEnumerable<AssetOrSearchObject> restore_list = result_list.Cast<AssetOrSearchObject>();
-			Selection.objects = restore_list.Select(
-				(t) => {
-					return AssetDatabase.LoadAssetAtPath(t.path, typeof(Object));
-				}
-			).ToArray();
-
 			if (Input.IsPressedOpenKey()) {
-				foreach (var obj in Selection.objects) {
-					if (PrefabUtility.GetPrefabType(obj) == PrefabType.Prefab) {
-						GameObject go = null;
-						if (Input.IsPressedShiftKey()) {
-							go = GameObject.Instantiate(obj) as GameObject;
-						}
-						else {
-							go = PrefabUtility.InstantiatePrefab(obj) as GameObject;
-						}
-						go.transform.position = Vector3.zero;
-						go.name = obj.name;
-					}
-					else {
-						AssetDatabase.OpenAsset(obj);
-					}
-				}
+				_OpenAssets(result_list);
 			}
 			else {
-				EditorApplication.ExecuteMenuItem("Window/Project");
-			    EditorUtility.FocusProjectWindow();
+				_SelectAssets(result_list);
 			}
+
+			EditorApplication.ExecuteMenuItem("Window/Project");
+		    EditorUtility.FocusProjectWindow();
 			_SaveHistory("AssetOrSearch", word);
+		}
+
+		private void _OpenAssets(IEnumerable<AssetOrSearchObject> result_list)
+		{
+			IEnumerable<UnityEngine.Object> objects = result_list
+				.Select( t => AssetDatabase.LoadAssetAtPath(t.path, typeof(Object)) )
+				.ToArray();
+
+			foreach (var obj in objects) {
+				if (PrefabUtility.GetPrefabType(obj) == PrefabType.Prefab) {
+					foreach (GameObject active_go in Selection.gameObjects) {
+						_CreatePrefab(obj, active_go);
+					}
+					if (Selection.gameObjects.Count() <= 0) {
+						_CreatePrefab(obj, null);
+					}
+				}
+				else {
+					AssetDatabase.OpenAsset(obj);
+				}
+			}
+		}
+
+		private void _CreatePrefab(UnityEngine.Object prefab, GameObject parent)
+		{
+			GameObject go = null;
+			if (Input.IsPressedShiftKey()) {
+				go = GameObject.Instantiate(prefab) as GameObject;
+			}
+			else {
+				go = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
+			}
+			Transform parent_transform = parent == null ? null:parent.transform;
+			go.transform.SetParent(parent_transform);
+			go.transform.localPosition = Vector3.zero;
+			go.name = prefab.name;
+		}
+
+		private void _SelectAssets(IEnumerable<AssetOrSearchObject> result_list)
+		{
+			Selection.objects = result_list
+				.Select( t => AssetDatabase.LoadAssetAtPath(t.path, typeof(Object)) )
+				.ToArray();
 		}
 
 		public override float GetRowHeight()
