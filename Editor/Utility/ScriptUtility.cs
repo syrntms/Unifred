@@ -28,11 +28,10 @@ namespace Unifred
 			//add unity engine location
 			paramater.ReferencedAssemblies.Add(typeof(MonoBehaviour).Assembly.Location);
 
-			if (assemblyTypes != null) {
-				assemblyTypes.ForEach(
-					assemblyType => paramater.ReferencedAssemblies.Add(assemblyType.Assembly.Location)
-				);
-			}
+			assemblyTypes = assemblyTypes ?? Enumerable.Empty<Type>();
+			assemblyTypes.ForEach(
+				assemblyType => paramater.ReferencedAssemblies.Add(assemblyType.Assembly.Location)
+			);
 
 			CompilerResults result = provider.CompileAssemblyFromSource(paramater, source);
 

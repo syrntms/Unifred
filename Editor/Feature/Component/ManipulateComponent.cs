@@ -56,13 +56,23 @@ namespace Unifred.Feature
 
 		private static GameObject _FindObjectIgnoreCase(GameObject root, string name)
 		{
-			return root.GetComponentsInChildren<Component>()
+
+			GameObject child = root.GetComponentsInChildren<Component>(true)
 				.Select( c => c.gameObject )
 				.Distinct()
 				.Where( go => go.name.IndexOf(name, StringComparison.OrdinalIgnoreCase) >= 0 )
 				.FirstOrDefault();
+			if (child != null) {
+				return child;
+			}
+
+			GameObject other = Resources.FindObjectsOfTypeAll<Component>()
+				.Select( c => c.gameObject )
+				.Distinct()
+				.Where( go => go.activeInHierarchy )
+				.Where( go => go.name.IndexOf(name, StringComparison.OrdinalIgnoreCase) >= 0 )
+				.FirstOrDefault();
+			return other;
 		}
 	}
-
-
 }
