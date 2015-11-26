@@ -48,7 +48,7 @@ namespace Unifred.Feature
                 return result;
 			}
 
-            var gameobjects = GameObject.FindObjectsOfType<GameObject>();
+            var gameobjects = GameObjectUtility.FindAllInHierarchy();
 			var words = word.Split(new char[]{' '}, StringSplitOptions.RemoveEmptyEntries);
 			if (words.Length <= 0) {
 				return result;
@@ -58,14 +58,9 @@ namespace Unifred.Feature
 				bool is_contain = words.Any(
 					(word_unit) => {
 						var is_in_name = gameobject.name.IndexOf(word_unit, StringComparison.OrdinalIgnoreCase) >= 0;
-						var is_in_component = gameobject.GetComponents<Component>().Any(
-							component => {
-								if (component == null) {
-									return false;
-								}
-								return component.GetType().Name.IndexOf(word_unit, StringComparison.OrdinalIgnoreCase) >= 0;
-							}
-						);
+						var is_in_component = gameobject.GetComponents<Component>()
+							.Where( c => c != null )
+							.Any( c => c.GetType().Name.IndexOf(word_unit, StringComparison.OrdinalIgnoreCase) >= 0 );
 						return is_in_name || is_in_component;
 					}
 				);
@@ -86,7 +81,9 @@ namespace Unifred.Feature
 			HierarchyOrSearchObject candidate,
 			bool is_selected
 		) {
-            GUILayout.Label(candidate.name, textGuiStyle);
+			string color = candidate.target.activeSelf ? "#ffffffff" : "#ffffff88";
+			string text	= string.Format("<color={0}>{1}</color>", color, candidate.name);
+            GUILayout.Label(text, textGuiStyle);
 		}
 
 		public override void Select(string word, IEnumerable<HierarchyOrSearchObject> result_list)

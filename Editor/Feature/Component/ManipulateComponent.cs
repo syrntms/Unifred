@@ -66,10 +66,7 @@ namespace Unifred.Feature
 				return child;
 			}
 
-			GameObject other = Resources.FindObjectsOfTypeAll<Component>()
-				.Select( c => c.gameObject )
-				.Distinct()
-				.Where( go => go.activeInHierarchy )
+			GameObject other = GameObjectUtility.FindAllInHierarchy()
 				.Where( go => go.name.IndexOf(name, StringComparison.OrdinalIgnoreCase) >= 0 )
 				.FirstOrDefault();
 			return other;
