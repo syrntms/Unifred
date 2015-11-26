@@ -20,17 +20,18 @@ namespace Unifred.Feature
 	public class LauncherFeature : UnifredFeatureBase<LauncherObject>
 	{
 		public IEnumerable<LauncherObject>	LaunchedFeatureObjects = new List<LauncherObject>(){
-			new LauncherObject() {ClassType = typeof(ProjectAndSearchWindow),		Hotkey = "p : ProjectSearch",		MethodName = "ShowWindow"},
-			new LauncherObject() {ClassType = typeof(HierarchyAndSearchWindow),	Hotkey = "h : HierarchySearch",	MethodName = "ShowWindow"},
+			new LauncherObject() {ClassType = typeof(ProjectAndSearchWindow),	Hotkey = "p  : ProjectSearch",		MethodName = "ShowWindow"},
+			new LauncherObject() {ClassType = typeof(HierarchyAndSearchWindow),	Hotkey = "h  : HierarchySearch",	MethodName = "ShowWindow"},
 			new LauncherObject() {ClassType = typeof(ManipulateComponent),		Hotkey = "ci : ComponentInitialize",MethodName = "InitializeField"},
 			new LauncherObject() {ClassType = typeof(MethodListWindow),			Hotkey = "cm : ComponentMethod",	MethodName = "ShowWindow"},
 			new LauncherObject() {ClassType = typeof(CopyComponentWindow),		Hotkey = "cc : ComponentCopy",		MethodName = "ShowWindow"},
 			new LauncherObject() {ClassType = typeof(DeleteComponentWindow),	Hotkey = "cd : ComponentDelete",	MethodName = "ShowWindow"},
 			new LauncherObject() {ClassType = typeof(PasteComponentWindow),		Hotkey = "cp : ComponentPaste",		MethodName = "ShowWindow"},
 			new LauncherObject() {ClassType = typeof(ValueListWindow),			Hotkey = "cv : ComponentValue",		MethodName = "ShowWindow"},
-			new LauncherObject() {ClassType = typeof(SearchHistoryWindow),		Hotkey = "u : UnifredHistory",		MethodName = "ShowWindow"},
-			new LauncherObject() {ClassType = typeof(ManipulateConsole),					Hotkey = "d : DebugClear",			MethodName = "Clear"},
-			new LauncherObject() {ClassType = typeof(ManipulateInspector),		Hotkey = "i : InspectorLock",		MethodName = "SwitchLock"},
+			new LauncherObject() {ClassType = typeof(SearchHistoryWindow),		Hotkey = "u  : UnifredHistory",		MethodName = "ShowWindow"},
+			new LauncherObject() {ClassType = typeof(ManipulateConsole),		Hotkey = "d  : DebugClear",			MethodName = "Clear"},
+			new LauncherObject() {ClassType = typeof(ManipulateInspector),		Hotkey = "il : InspectorLock",		MethodName = "SwitchLock"},
+			new LauncherObject() {ClassType = typeof(IconSetupWindow),			Hotkey = "gi : GameobjectIcon",		MethodName = "ShowWindow"},
 		};
 
 		private static GUIStyle textGuiStyle = new GUIStyle {
