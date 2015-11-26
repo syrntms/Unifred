@@ -8,20 +8,20 @@ using Object = System.Object;
 namespace Unifred.Feature
 {
 
-	public class AssetOrSearchWindow : UnifredWindowController<AssetOrSearchObject>
+	public class ProjectOrSearchWindow : UnifredWindowController<ProjectOrSearchObject>
 	{
 		public static void ShowWindow()
 		{
-			ShowWindow(new AssetOrSearch(), "");
+			ShowWindow(new ProjectOrSearch(), "");
 		}
 
 		public static void ShowWindow(string initialize_word)
 		{
-			ShowWindow(new AssetOrSearch(), initialize_word);
+			ShowWindow(new ProjectOrSearch(), initialize_word);
 		}
 	}
 
-	public class AssetOrSearch : UnifredFeatureBase<AssetOrSearchObject>
+	public class ProjectOrSearch : UnifredFeatureBase<ProjectOrSearchObject>
 	{
 		//about label 
 		private static GUIStyle textGuiStyle = new GUIStyle {
@@ -53,9 +53,9 @@ namespace Unifred.Feature
 			return CandidateSelectMode.Multiple;
 		}
 
-		public override IEnumerable<AssetOrSearchObject> UpdateCandidate(string input)
+		public override IEnumerable<ProjectOrSearchObject> UpdateCandidate(string input)
 		{
-			List<AssetOrSearchObject> result = new List<AssetOrSearchObject>();
+			List<ProjectOrSearchObject> result = new List<ProjectOrSearchObject>();
             if (string.IsNullOrEmpty(input)) {
                 return result;
 			}
@@ -81,7 +81,7 @@ namespace Unifred.Feature
 					continue;
 				}
 
-				AssetOrSearchObject content = new AssetOrSearchObject();
+				ProjectOrSearchObject content = new ProjectOrSearchObject();
 				content.path = path;
 				result.Add(content);
 			}
@@ -90,7 +90,7 @@ namespace Unifred.Feature
 
 		public override void Draw(
 			string word,
-			AssetOrSearchObject candidate,
+			ProjectOrSearchObject candidate,
 			bool is_selected
 		) {
 			Texture icon = UnityEditorInternal.InternalEditorUtility.GetIconForFile(candidate.path);
@@ -98,10 +98,10 @@ namespace Unifred.Feature
             GUILayout.Label(candidate.path, textGuiStyle);
 		}
 
-		public override void Select(string word, IEnumerable<AssetOrSearchObject> result_list)
+		public override void Select(string word, IEnumerable<ProjectOrSearchObject> result_list)
 		{
 			if (string.IsNullOrEmpty(word)) {
-				EditorApplication.delayCall += () => { AssetAndSearchWindow.ShowWindow(); };
+				EditorApplication.delayCall += () => { ProjectAndSearchWindow.ShowWindow(); };
 				return;
 			}
 
@@ -117,7 +117,7 @@ namespace Unifred.Feature
 			_SaveHistory("AssetOrSearch", word);
 		}
 
-		private void _OpenAssets(IEnumerable<AssetOrSearchObject> result_list)
+		private void _OpenAssets(IEnumerable<ProjectOrSearchObject> result_list)
 		{
 			IEnumerable<UnityEngine.Object> objects = result_list
 				.Select( t => AssetDatabase.LoadAssetAtPath(t.path, typeof(Object)) )
@@ -153,7 +153,7 @@ namespace Unifred.Feature
 			go.name = prefab.name;
 		}
 
-		private void _SelectAssets(IEnumerable<AssetOrSearchObject> result_list)
+		private void _SelectAssets(IEnumerable<ProjectOrSearchObject> result_list)
 		{
 			Selection.objects = result_list
 				.Select( t => AssetDatabase.LoadAssetAtPath(t.path, typeof(Object)) )
@@ -169,7 +169,7 @@ namespace Unifred.Feature
 
 	}
 
-	public class AssetOrSearchObject
+	public class ProjectOrSearchObject
 	{
 		public string path;
 	};

@@ -106,12 +106,12 @@ namespace Unifred.Feature
 			switch (result.mode) {
 			case SearchHistoryObject.SearchMode.AssetOrSearch:
 				EditorApplication.delayCall += () => {
-					AssetOrSearchWindow.ShowWindow(result.input);
+					ProjectOrSearchWindow.ShowWindow(result.input);
 				};
 				break;
 			case SearchHistoryObject.SearchMode.AssetAndSearch:
 				EditorApplication.delayCall += () => {
-					AssetAndSearchWindow.ShowWindow(result.input);
+					ProjectAndSearchWindow.ShowWindow(result.input);
 				};
 				break;
 			case SearchHistoryObject.SearchMode.HierarchyOrSearch:

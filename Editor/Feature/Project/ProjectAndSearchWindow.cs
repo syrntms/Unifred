@@ -8,20 +8,20 @@ using Object = System.Object;
 namespace Unifred.Feature
 {
 
-	public class AssetAndSearchWindow : UnifredWindowController<AssetAndSearchObject>
+	public class ProjectAndSearchWindow : UnifredWindowController<ProjectAndSearchObject>
 	{
 		public static void ShowWindow()
 		{
-			ShowWindow(new AssetAndSearch(), string.Empty);
+			ShowWindow(new ProjectAndSearch(), string.Empty);
 		}
 
 		public static void ShowWindow(string initial_word)
 		{
-			ShowWindow(new AssetAndSearch(), initial_word);
+			ShowWindow(new ProjectAndSearch(), initial_word);
 		}
 	}
 
-	public class AssetAndSearch : UnifredFeatureBase<AssetAndSearchObject>
+	public class ProjectAndSearch : UnifredFeatureBase<ProjectAndSearchObject>
 	{
 
 		//about label 
@@ -54,9 +54,9 @@ namespace Unifred.Feature
 			return CandidateSelectMode.Multiple;
 		}
 
-		public override IEnumerable<AssetAndSearchObject> UpdateCandidate(string input)
+		public override IEnumerable<ProjectAndSearchObject> UpdateCandidate(string input)
 		{
-			List<AssetAndSearchObject> result = new List<AssetAndSearchObject>();
+			List<ProjectAndSearchObject> result = new List<ProjectAndSearchObject>();
             if (string.IsNullOrEmpty(input)) {
                 return result;
 			}
@@ -82,7 +82,7 @@ namespace Unifred.Feature
 					continue;
 				}
 
-				AssetAndSearchObject content = new AssetAndSearchObject();
+				ProjectAndSearchObject content = new ProjectAndSearchObject();
 				content.path = path;
 				result.Add(content);
 			}
@@ -91,7 +91,7 @@ namespace Unifred.Feature
 
 		public override void Draw(
 			string word,
-			AssetAndSearchObject candidate,
+			ProjectAndSearchObject candidate,
 			bool is_selected
 		) {
 			Texture icon = UnityEditorInternal.InternalEditorUtility.GetIconForFile(candidate.path);
@@ -99,10 +99,10 @@ namespace Unifred.Feature
             GUILayout.Label(candidate.path, textGuiStyle);
 		}
 
-		public override void Select(string word, IEnumerable<AssetAndSearchObject> result_list)
+		public override void Select(string word, IEnumerable<ProjectAndSearchObject> result_list)
 		{
 			if (string.IsNullOrEmpty(word)) {
-				EditorApplication.delayCall += () => { AssetOrSearchWindow.ShowWindow(); };
+				EditorApplication.delayCall += () => { ProjectOrSearchWindow.ShowWindow(); };
 				return;
 			}
 
@@ -118,7 +118,7 @@ namespace Unifred.Feature
 			_SaveHistory("AssetAndSearch", word);
 		}
 
-		private void _OpenAssets(IEnumerable<AssetAndSearchObject> result_list)
+		private void _OpenAssets(IEnumerable<ProjectAndSearchObject> result_list)
 		{
 			IEnumerable<UnityEngine.Object> objects = result_list
 				.Select( t => AssetDatabase.LoadAssetAtPath(t.path, typeof(Object)) )
@@ -154,7 +154,7 @@ namespace Unifred.Feature
 			go.name = prefab.name;
 		}
 
-		private void _SelectAssets(IEnumerable<AssetAndSearchObject> result_list)
+		private void _SelectAssets(IEnumerable<ProjectAndSearchObject> result_list)
 		{
 			Selection.objects = result_list
 				.Select( t => AssetDatabase.LoadAssetAtPath(t.path, typeof(Object)) )
@@ -169,7 +169,7 @@ namespace Unifred.Feature
 		#endregion
 	}
 
-	public class AssetAndSearchObject
+	public class ProjectAndSearchObject
 	{
 		public string path;
 	};

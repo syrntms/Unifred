@@ -20,7 +20,7 @@ namespace Unifred.Feature
 	public class LauncherFeature : UnifredFeatureBase<LauncherObject>
 	{
 		public IEnumerable<LauncherObject>	LaunchedFeatureObjects = new List<LauncherObject>(){
-			new LauncherObject() {ClassType = typeof(AssetAndSearchWindow),		Hotkey = "p : ProjectSearch",		MethodName = "ShowWindow"},
+			new LauncherObject() {ClassType = typeof(ProjectAndSearchWindow),		Hotkey = "p : ProjectSearch",		MethodName = "ShowWindow"},
 			new LauncherObject() {ClassType = typeof(HierarchyAndSearchWindow),	Hotkey = "h : HierarchySearch",	MethodName = "ShowWindow"},
 			new LauncherObject() {ClassType = typeof(ManipulateComponent),		Hotkey = "ci : ComponentInitialize",MethodName = "InitializeField"},
 			new LauncherObject() {ClassType = typeof(MethodListWindow),			Hotkey = "cm : ComponentMethod",	MethodName = "ShowWindow"},
