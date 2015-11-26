@@ -22,7 +22,7 @@ namespace Unifred
 						return " + value + @";
 				    }
 				}";
-			var provider = new CSharpCodeProvider();
+			CodeDomProvider provider = new CSharpCodeProvider();
 			var paramater = new CompilerParameters();
 			paramater.GenerateInMemory = true;
 			//add unity engine location
@@ -34,9 +34,7 @@ namespace Unifred
 				);
 			}
 
-			ICodeCompiler compiler = provider.CreateCompiler();
-
-			CompilerResults result = compiler.CompileAssemblyFromSource(paramater, source);
+			CompilerResults result = provider.CompileAssemblyFromSource(paramater, source);
 
 			Assembly asm = result.CompiledAssembly;
 			foreach (var err in result.Errors) {
