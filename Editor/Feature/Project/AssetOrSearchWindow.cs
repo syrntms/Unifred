@@ -105,7 +105,7 @@ namespace Unifred.Feature
 				return;
 			}
 
-			if (Input.IsPressedOpenKey()) {
+			if (Input.IsPressedCommandKey()) {
 				_OpenAssets(result_list);
 			}
 			else {

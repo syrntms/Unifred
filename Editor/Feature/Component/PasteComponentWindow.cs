@@ -80,7 +80,7 @@ namespace Unifred.Feature
 			result_list.ForEach(
 				pasteObject => {
 					var component = Selection.activeGameObject.GetComponent(pasteObject.componentType);
-					var is_add = component == null || Input.IsPressedPasteAsNew();
+					var is_add = component == null || Input.IsPressedCommandKey();
 					if (is_add) {
 						component = Selection.activeGameObject.AddComponent(pasteObject.componentType);
 					}

@@ -25,53 +25,34 @@ namespace Unifred
 			return Event.current.isMouse;
 		}
 
-		public static bool IsKeyDown(KeyCode keyCode)
+		public static bool IsPressedKey(KeyCode keyCode)
 		{
 			return Event.current.type == EventType.keyDown && Event.current.keyCode == keyCode;
 		}
 
 		public static bool IsPressedDownKey()
 		{
-			return Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.DownArrow;
-		}
-
-		public static bool IsPressedOpenKey()
-		{
-			return _IsPlatformMac()? Event.current.command:Event.current.control;
-		}
-
-		public static bool IsPressedPasteAsNew()
-		{
-			return _IsPlatformMac()? Event.current.command:Event.current.control;
-		}
-
-		public static bool IsPressedRoundGoKey()
-		{
-			return Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.Tab;
-		}
-
-		public static bool IsPressedReverseKey() {
-			return Event.current.shift;
+			return IsPressedKey(KeyCode.DownArrow);
 		}
 
 		public static bool IsPressedUpKey()
 		{
-			return Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.UpArrow;
+			return IsPressedKey(KeyCode.UpArrow);
 		}
 
-		public static bool IsPressedExpandKey()
+		public static bool IsPressedTabKey()
 		{
-			return Event.current.shift;
+			return IsPressedKey(KeyCode.Tab);
 		}
 
-		public static bool IsPressedToggleKey()
+		public static bool IsPressedEscapeKey()
 		{
-			return _IsPlatformMac()? Event.current.command:Event.current.control;
+			return IsPressedKey(KeyCode.Escape);
 		}
 
-		public static bool IsPressedCancelKey()
+		public static bool IsPressedReturnKey()
 		{
-			return Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.Escape;
+			return IsPressedKey(KeyCode.Return);
 		}
 
 		public static bool IsPressedCommandKey()
@@ -79,19 +60,8 @@ namespace Unifred
 			return _IsPlatformMac()? Event.current.command:Event.current.control;
 		}
 
-		public static bool IsPressedShiftKey()
-		{
+		public static bool IsPressedShiftKey() {
 			return Event.current.shift;
-		}
-
-		public static bool IsPressedDoneKey()
-		{
-			return Event.current.type == EventType.keyDown && Event.current.keyCode == KeyCode.Return;
-		}
-
-		public static bool IsPressedRemoveWordKey()
-		{
-			return Event.current.control && Event.current.keyCode == KeyCode.W;
 		}
 
 		private static bool _IsPlatformMac()

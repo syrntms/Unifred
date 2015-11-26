@@ -40,12 +40,12 @@ namespace Unifred
 				onGuiOnceAction = null;
 			}
 
-			if (Input.IsPressedCancelKey()) {
+			if (Input.IsPressedEscapeKey()) {
 				window.Close();
 				return;
 			}
 
-			if (Input.IsPressedDoneKey()) {
+			if (Input.IsPressedReturnKey()) {
 				_OnPressedDoneKey();
 				window.Close();
 				return;
@@ -196,7 +196,7 @@ namespace Unifred
 				return;
 			}
 
-			if (Input.IsPressedExpandKey() && feature.GetSelectMode() == CandidateSelectMode.Multiple) {
+			if (Input.IsPressedShiftKey() && feature.GetSelectMode() == CandidateSelectMode.Multiple) {
 				_UpdateSelectedByMouseWithExpand();
 			}
 			else {
@@ -319,7 +319,7 @@ namespace Unifred
 			isScrollToSelected = true;
 
 			int next = 0;
-			if (Input.IsPressedReverseKey()) {
+			if (Input.IsPressedShiftKey()) {
 				next = --current_selected.to;
 			}
 			else {
@@ -351,14 +351,14 @@ namespace Unifred
 		/// </summary>
 		private void _UpdateSelectedByKeyboard()
 		{
-			if (Input.IsPressedExpandKey()) {
+			if (Input.IsPressedShiftKey()) {
 				_UpdateSelectedByKeyboardWithExpand();
 			}
 			else {
 				_UpdateSelectedByKeyboardWithoutExpand();
 			}
 
-			if (Input.IsPressedRoundGoKey()) {
+			if (Input.IsPressedTabKey()) {
 				_UpdateSelectedByRoundGoKey();
 				Event.current.Use();
 			}
