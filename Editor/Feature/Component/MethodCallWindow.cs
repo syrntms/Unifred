@@ -14,13 +14,27 @@ namespace Unifred.Feature
 	{
 		public static void ShowWindow(IEnumerable<MethodListObject> list)
 		{
-			MethodCall.SetList(list);
-			ShowWindow(new MethodCall(), string.Empty);
+			ShowWindow(new MethodCall(list), string.Empty);
 		}
 	}
 
 	public class MethodCall : UnifredFeatureBase<MethodCallObject>
 	{
+
+		private List<MethodCallObject> list = new List<MethodCallObject>();
+
+		public MethodCall(IEnumerable<MethodListObject> list)
+		{
+			this.list.Clear();
+			foreach (var item in list) {
+				var call_object = new MethodCallObject();
+				call_object.component 	= item.component;
+				call_object.method 		= item.method;
+				call_object.name 		= item.name;
+				call_object.target 		= item.target;
+				this.list.Add(call_object);
+			}
+		}
 
 		private static GUIStyle textGuiStyle = new GUIStyle {
 			richText = true,
@@ -29,19 +43,6 @@ namespace Unifred.Feature
 			alignment = TextAnchor.MiddleLeft,
 			normal = { textColor = Color.white, },
 		};
-
-		public static void SetList(IEnumerable<MethodListObject> list)
-		{
-			MethodCall.list.Clear();
-			foreach (var item in list) {
-				var call_object = new MethodCallObject();
-				call_object.component 	= item.component;
-				call_object.method 		= item.method;
-				call_object.name 		= item.name;
-				call_object.target 		= item.target;
-				MethodCall.list.Add(call_object);
-			}
-		}
 
 		public override string GetDescription()
 		{
@@ -124,27 +125,18 @@ namespace Unifred.Feature
 				param_list  = new object[param_length];
 				for (int i = 0; i < param_length ; i++) {
 					param_list[i] = ScriptUtility.MakeValue(string_params[i], real_types[i]);
-//					Debug.Log(
-//						"@input : " 	+ string_params[i] +
-//						"@type : " 		+ real_types[i].ToString() +
-//						"@result : " 	+ param_list[i].ToString()
-//						);
 				}
 			}
 
 			return param_list;
 		}
 
-		private static List<MethodCallObject> list = new List<MethodCallObject>();
-
 		public override float GetRowHeight()
 		{
 			return textGuiStyle.CalcSize(new GUIContent("sample")).y
 				+ textGuiStyle.margin.bottom + textGuiStyle.margin.top;
 		}
-
 	}
-
 
 	public class MethodCallObject
 	{

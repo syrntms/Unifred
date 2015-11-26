@@ -29,7 +29,7 @@ namespace Unifred.Feature
 			new LauncherObject() {ClassType = typeof(PasteComponentWindow),		Hotkey = "cp : ComponentPaste",		MethodName = "ShowWindow"},
 			new LauncherObject() {ClassType = typeof(ValueListWindow),			Hotkey = "cv : ComponentValue",		MethodName = "ShowWindow"},
 			new LauncherObject() {ClassType = typeof(SearchHistoryWindow),		Hotkey = "u : UnifredHistory",		MethodName = "ShowWindow"},
-			new LauncherObject() {ClassType = typeof(Console),					Hotkey = "d : DebugClear",			MethodName = "Clear"},
+			new LauncherObject() {ClassType = typeof(ManipulateConsole),					Hotkey = "d : DebugClear",			MethodName = "Clear"},
 			new LauncherObject() {ClassType = typeof(ManipulateInspector),		Hotkey = "i : InspectorLock",		MethodName = "SwitchLock"},
 		};
 

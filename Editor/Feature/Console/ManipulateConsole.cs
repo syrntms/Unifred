@@ -4,7 +4,7 @@ using System.Collections;
 
 namespace Unifred.Feature
 {
-	public class Console : MonoBehaviour
+	public class ManipulateConsole : MonoBehaviour
 	{
 		public static void Clear()
 		{
