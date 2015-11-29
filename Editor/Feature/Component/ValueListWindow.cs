@@ -137,25 +137,16 @@ namespace Unifred.Feature
 
 		private void Show(ValueListObject result)
 		{
-			object showedValue = null;
-			if (result.field != null) {
-				showedValue = result.field.GetValue(result.component);
-			}
-			else if (result.property != null) {
-				showedValue = result.property.GetValue(result.component, null);
+			var labelComponent = result.target.GetComponent<SceneWindowLabel>();
+			if (labelComponent == null) {
+				labelComponent = result.target.AddComponent<SceneWindowLabel>();
 			}
 
-			if (showedValue is String) {
-				Debug.Log(showedValue);
+			if (result.field != null) {
+				labelComponent.Add(result.component,  result.field);
 			}
-			else {
-				string log = showedValue.ToStringFields();
-				if (string.IsNullOrEmpty(log)) {
-					Debug.Log(showedValue.ToStringProperties());
-				}
-				else {
-					Debug.Log(log);
-				}
+			else if (result.property != null) {
+				labelComponent.Add(result.component,  result.property);
 			}
 		}
 
