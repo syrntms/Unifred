@@ -12,7 +12,8 @@ namespace Unifred
 
 		public static void SwitchLock()
 		{
-			var window = Resources.FindObjectsOfTypeAll<EditorWindow>()
+			var window = Resources.FindObjectsOfTypeAll(typeof(EditorWindow))
+				.Select( w => w as EditorWindow)
 				.Where( w => w.GetType().Name == "InspectorWindow" )
 				.FirstOrDefault();
 

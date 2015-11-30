@@ -9,7 +9,9 @@ namespace Unifred
 	{
 		public static IEnumerable<GameObject> FindAllInHierarchy()
 		{
-			return Resources.FindObjectsOfTypeAll<GameObject>().Distinct();
+			return Resources.FindObjectsOfTypeAll(typeof(GameObject))
+				.Select( g => g as GameObject )
+				.Distinct();
 		}
 	}
 }
