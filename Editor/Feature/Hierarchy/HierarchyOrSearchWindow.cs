@@ -93,9 +93,28 @@ namespace Unifred.Feature
 					HierarchyAndSearchWindow.ShowWindow();
 				};
 			}
+
+			if (Input.IsPressedCommandKey()) {
+				_ShowRenameWindow(result_list, word);
+			}
+			else {
+				_SelectObject(result_list);
+			}
+			_SaveHistory("HierarchyOrSearch", word);
+		}
+
+		private void _ShowRenameWindow(IEnumerable<HierarchyOrSearchObject> result_list, string word)
+		{
+			IEnumerable<GameObject> list = result_list.Select(item => item.target);
+			EditorApplication.delayCall += () => {
+				RenameWindow.ShowWindow(list, word);
+			};
+		}
+
+		private void _SelectObject(IEnumerable<HierarchyOrSearchObject> result_list)
+		{
 			Selection.objects = result_list.Select((t) => {return t.target;}).Cast<GameObject>().ToArray();
 			EditorApplication.ExecuteMenuItem("Window/Hierarchy");
-			_SaveHistory("HierarchyOrSearch", word);
 		}
 
 		public override float GetRowHeight()
