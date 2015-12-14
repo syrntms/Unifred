@@ -50,7 +50,7 @@ namespace Unifred.Feature
 
             var gameobjects = GameObjectUtility
 				.FindAllInHierarchy()
-				.Where(go => AssetDatabase.GetAssetOrScenePath(go).Contains(".unity"));
+				.Where(go => { var path = AssetDatabase.GetAssetOrScenePath(go); return path.Contains(".unity") || string.IsNullOrEmpty(path);});
 			var words = word.Split(new char[]{' '}, StringSplitOptions.RemoveEmptyEntries);
 			if (words.Length <= 0) {
 				return result;

@@ -75,7 +75,7 @@ namespace Unifred.Feature
 			string word,
 			IEnumerable<RenameObject> result_list
 		) {
-			foreach(var candidate in result_list) {
+			foreach(var candidate in list) {
 				int start = candidate.gameObject.name.IndexOf(from, StringComparison.OrdinalIgnoreCase);
 				int count = from.Length;
 				string oldWord = candidate.gameObject.name.Substring(start, count);
