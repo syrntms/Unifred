@@ -74,7 +74,7 @@ namespace Unifred.Feature
 			guid_list = guid_list.Distinct().ToList();
 
 			foreach (var guid in guid_list) {
-				string path = AssetDatabase.GUIDToAssetPath(guid);;
+				string path = AssetDatabase.GUIDToAssetPath(guid);
 				bool is_contain = words.All(
 					(word_unit) => {return path.IndexOf(word_unit, StringComparison.OrdinalIgnoreCase) >= 0;}
 				);

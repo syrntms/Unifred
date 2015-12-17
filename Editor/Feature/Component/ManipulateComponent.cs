@@ -11,8 +11,8 @@ namespace Unifred.Feature
 	{
 		public static void InitializeField()
 		{
-			bool isSelect = Selection.gameObjects.Count() > 0;
-			if (!isSelect) {
+			bool is_select = Selection.gameObjects.Count() > 0;
+			if (!is_select) {
 				return;
 			}
 
@@ -23,8 +23,8 @@ namespace Unifred.Feature
 
 		private static void Initialize(Component component)
 		{
-			var toSerialized	= new SerializedObject(component);
-			var iterator		= toSerialized.GetIterator();
+			var to_serialized	= new SerializedObject(component);
+			var iterator		= to_serialized.GetIterator();
 
 			while (iterator.Next(true))
 			{
@@ -37,10 +37,18 @@ namespace Unifred.Feature
 					continue;
 				}
 
-				iterator.objectReferenceValue = _FindObjectIgnoreCase(component.gameObject, iterator.name);
+				if (iterator.name.EndsWith("prefab", StringComparison.OrdinalIgnoreCase)) {
+					iterator.objectReferenceValue = _FindAssetIgnoreCase(
+						_GetFileName(iterator.name, "prefab"),
+						".prefab"
+					);
+				}
+				else {
+					iterator.objectReferenceValue = _FindObjectIgnoreCase(component.gameObject, iterator.name);
+				}
 			}
-			toSerialized.ApplyModifiedProperties();
-			toSerialized.UpdateIfDirtyOrScript();
+			to_serialized.ApplyModifiedProperties();
+			to_serialized.UpdateIfDirtyOrScript();
 		}
 
 		private static IEnumerable<string> GetBlackList()
@@ -56,20 +64,45 @@ namespace Unifred.Feature
 
 		private static GameObject _FindObjectIgnoreCase(GameObject root, string name)
 		{
-
+			// find from children
 			GameObject child = root.GetComponentsInChildren<Component>(true)
 				.Select( c => c.gameObject )
 				.Distinct()
 				.Where( go => go.name.IndexOf(name, StringComparison.OrdinalIgnoreCase) >= 0 )
-				.FirstOrDefault();
+				.FirstOrDefault( go => go.name.Length == name.Length );
 			if (child != null) {
 				return child;
 			}
 
+			// find from scene
 			GameObject other = GameObjectUtility.FindAllInHierarchy()
 				.Where( go => go.name.IndexOf(name, StringComparison.OrdinalIgnoreCase) >= 0 )
-				.FirstOrDefault();
+				.FirstOrDefault( go => go.name.Length == name.Length );
+
 			return other;
+		}
+
+		private static UnityEngine.Object _FindAssetIgnoreCase(string word, string ext)
+		{
+			string prefab_name = word + ext;
+			var guid_list = AssetDatabase.FindAssets(word);
+			foreach (var guid in guid_list) {
+				var path = AssetDatabase.GUIDToAssetPath(guid);
+				var filename = path.Split(new char[]{'/'}, StringSplitOptions.RemoveEmptyEntries).LastOrDefault();
+				var is_same = filename.IndexOf(prefab_name, StringComparison.OrdinalIgnoreCase) >= 0 
+					&& filename.Length == prefab_name.Length;
+
+				if (!is_same) {
+					continue;
+				}
+				return AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(path);
+			}
+			return null;
+		}
+
+		private static string _GetFileName(string word, string extWithoutPeriod)
+		{
+			return word.Substring(0, word.Length - extWithoutPeriod.Length);
 		}
 	}
 }

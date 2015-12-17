@@ -48,9 +48,7 @@ namespace Unifred.Feature
                 return result;
 			}
 
-			var gameobjects = GameObjectUtility
-				.FindAllInHierarchy()
-				.Where(go => { var path = AssetDatabase.GetAssetOrScenePath(go); return path.Contains(".unity") || string.IsNullOrEmpty(path);});
+			var gameobjects = GameObjectUtility.FindAllInHierarchy();
 			var words = word.Split(new char[]{' '}, StringSplitOptions.RemoveEmptyEntries);
 			if (words.Length <= 0) {
 				return result;
