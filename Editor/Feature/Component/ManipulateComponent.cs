@@ -26,25 +26,39 @@ namespace Unifred.Feature
 			var to_serialized	= new SerializedObject(component);
 			var iterator		= to_serialized.GetIterator();
 
-			while (iterator.Next(true))
-			{
-				if (iterator.propertyType != SerializedPropertyType.ObjectReference) {
-					continue;
-				}
+			while (iterator.Next(true)) {
 
-				bool isBlackList = GetBlackList().Any(path => iterator.propertyPath.Contains(path));
-				if (isBlackList) {
-					continue;
+				if (iterator.propertyType == SerializedPropertyType.Generic) {
+					if (iterator.name.EndsWith("ListItems", StringComparison.OrdinalIgnoreCase)) {
+						string parent_name = iterator.name.Substring(0, iterator.name.Length - "Items".Length);
+						GameObject parent_go = _FindObjectIgnoreCase(component.gameObject, parent_name);
+						int length = parent_go.transform.childCount;
+						iterator.ClearArray();
+						iterator.arraySize = length;
+						for (int i = 0 ; i < length ; ++i) {
+							var prop = iterator.GetArrayElementAtIndex(i);
+							prop.objectReferenceValue = parent_go.transform.GetChild(i).gameObject;
+						}
+						iterator = iterator.GetArrayElementAtIndex(length - 1);
+						continue;
+					}
 				}
+					
+				if (iterator.propertyType == SerializedPropertyType.ObjectReference) {
+					bool isBlackList = GetBlackList().Any(path => iterator.propertyPath.Contains(path));
+					if (isBlackList) {
+						continue;
+					}
 
-				if (iterator.name.EndsWith("prefab", StringComparison.OrdinalIgnoreCase)) {
-					iterator.objectReferenceValue = _FindAssetIgnoreCase(
-						_GetFileName(iterator.name, "prefab"),
-						".prefab"
-					);
-				}
-				else {
-					iterator.objectReferenceValue = _FindObjectIgnoreCase(component.gameObject, iterator.name);
+					if (iterator.name.EndsWith("prefab", StringComparison.OrdinalIgnoreCase)) {
+						iterator.objectReferenceValue = _FindAssetIgnoreCase(
+							_GetFileName(iterator.name, "prefab"),
+							".prefab"
+						);
+					}
+					else {
+						iterator.objectReferenceValue = _FindObjectIgnoreCase(component.gameObject, iterator.name);
+					}
 				}
 			}
 			to_serialized.ApplyModifiedProperties();
