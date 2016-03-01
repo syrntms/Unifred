@@ -32,11 +32,17 @@ namespace Unifred.Feature
 					if (iterator.name.EndsWith("ListItems", StringComparison.OrdinalIgnoreCase)) {
 						string parent_name = iterator.name.Substring(0, iterator.name.Length - "Items".Length);
 						GameObject parent_go = _FindObjectIgnoreCase(component.gameObject, parent_name);
+						if (parent_go == null) {
+							continue;
+						}
 						int length = parent_go.transform.childCount;
 						iterator.ClearArray();
 						iterator.arraySize = length;
 						for (int i = 0 ; i < length ; ++i) {
 							var prop = iterator.GetArrayElementAtIndex(i);
+							if (prop.propertyType != SerializedPropertyType.ObjectReference) {
+								continue;
+							}
 							prop.objectReferenceValue = parent_go.transform.GetChild(i).gameObject;
 						}
 						iterator = iterator.GetArrayElementAtIndex(length - 1);
