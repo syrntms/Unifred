@@ -22,7 +22,7 @@ namespace Unifred.Feature
 		public IEnumerable<LauncherObject>	LaunchedFeatureObjects = new List<LauncherObject>(){
 			new LauncherObject() {ClassType = typeof(ProjectAndSearchWindow),	Hotkey = "p  : ProjectSearch",		MethodName = "ShowWindow"},
 			new LauncherObject() {ClassType = typeof(HierarchyAndSearchWindow),	Hotkey = "h  : HierarchySearch",	MethodName = "ShowWindow"},
-			new LauncherObject() {ClassType = typeof(ManipulateComponent),		Hotkey = "ci : ComponentInitialize",MethodName = "InitializeField"},
+			new LauncherObject() {ClassType = typeof(InitializeComponentWindow),Hotkey = "ci : ComponentInitialize",MethodName = "ShowWindow"},
 			new LauncherObject() {ClassType = typeof(MethodListWindow),			Hotkey = "cm : ComponentMethod",	MethodName = "ShowWindow"},
 			new LauncherObject() {ClassType = typeof(CopyComponentWindow),		Hotkey = "cc : ComponentCopy",		MethodName = "ShowWindow"},
 			new LauncherObject() {ClassType = typeof(DeleteComponentWindow),	Hotkey = "cd : ComponentDelete",	MethodName = "ShowWindow"},

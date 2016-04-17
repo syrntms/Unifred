@@ -7,21 +7,80 @@ using UnityEngine;
 namespace Unifred.Feature
 {
 
-	public class ManipulateComponent
+	public class InitializeComponentWindow : UnifredWindowController<InitializeComponentObject>
 	{
-		public static void InitializeField()
+		public static void ShowWindow()
 		{
-			bool is_select = Selection.gameObjects.Count() > 0;
-			if (!is_select) {
-				return;
-			}
+			ShowWindow(new InitializeComponent(), string.Empty);
+		}
+	}
 
-			foreach (var go in Selection.gameObjects) {
-				go.GetComponents<Component>().ForEach( c => Initialize(c) );
+	public class InitializeComponent : UnifredFeatureBase<InitializeComponentObject>
+	{
+		private static GUIStyle textGuiStyle = new GUIStyle
+		{
+			richText = true,
+			fontSize = 12,
+			margin = new RectOffset(5, 5, 5, 5),
+			alignment = TextAnchor.MiddleLeft,
+			normal = { textColor = Color.white, }
+		};
+
+		public override string GetDescription()
+		{
+			if (Selection.activeGameObject == null) {
+				return "<color=white>select game object you want to Initialize</color>";
 			}
+			return "input component name you wanna to Initialize";
 		}
 
-		private static void Initialize(Component component)
+		public override CandidateSelectMode GetSelectMode()
+		{
+			return CandidateSelectMode.Multiple;
+		}
+
+		public override IEnumerable<InitializeComponentObject> UpdateCandidate(string input)
+		{
+			List<InitializeComponentObject> result = new List<InitializeComponentObject>();
+			Selection.gameObjects
+				.SelectMany(go => go.GetComponents<Component>())
+				.Select(c => new InitializeComponentObject(){component = c})
+				.ForEach(obj => result.Add(obj));
+		
+			string[] words = input.Split(new char[]{' '}, StringSplitOptions.RemoveEmptyEntries);
+			return result.Where(
+				obj => words.All( word => 
+					obj.component.GetType().ToString().IndexOf(word, StringComparison.OrdinalIgnoreCase) >= 0
+					|| obj.component.gameObject.name.IndexOf(word, StringComparison.OrdinalIgnoreCase) >= 0
+				)
+			);
+		}	
+
+		public override void Draw(
+			string word,
+			InitializeComponentObject candidate,
+			bool is_selected
+		) {
+			string text = string.Format("{0}::{1}",
+				candidate.component.gameObject.name,
+				candidate.component.GetType().ToString()
+			);
+			GUILayout.Label(text, textGuiStyle);
+		}
+
+		public override void Select(string word, IEnumerable<InitializeComponentObject> result_list)
+		{
+			bool isOnlyEmptyField = !Input.IsPressedCommandKey();
+			result_list.ForEach( obj => Initialize(obj.component, isOnlyEmptyField) );
+		}
+
+		public override float GetRowHeight()
+		{
+			return textGuiStyle.CalcSize(new GUIContent("sample")).y
+				+ textGuiStyle.margin.bottom + textGuiStyle.margin.top;
+		}
+
+		private static void Initialize(Component component, bool isOnlyEmptyField)
 		{
 			var to_serialized	= new SerializedObject(component);
 			var iterator		= to_serialized.GetIterator();
@@ -51,6 +110,9 @@ namespace Unifred.Feature
 				}
 					
 				if (iterator.propertyType == SerializedPropertyType.ObjectReference) {
+					if (isOnlyEmptyField && iterator.objectReferenceValue != null) {
+						continue;
+					}
 					bool isBlackList = GetBlackList().Any(path => iterator.propertyPath.Contains(path));
 					if (isBlackList) {
 						continue;
@@ -125,4 +187,10 @@ namespace Unifred.Feature
 			return word.Substring(0, word.Length - extWithoutPeriod.Length);
 		}
 	}
+
+	[System.Serializable]
+	public class InitializeComponentObject
+	{
+		public Component component;
+	};
 }
