@@ -31,7 +31,7 @@ namespace Unifred
 
 			Header = new GUIStyle() {
 				normal = new GUIStyleState() {
-					background = Resources.Load("Unifred/Texture/UI/header") as Texture2D,
+					background = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Unifred/Image/UI/header.png"),
 					textColor = Color.black,
 				},
 				border = new RectOffset(3, 4, 0, 0),
@@ -54,11 +54,11 @@ namespace Unifred
 
 			HeaderTopExecuteButton = new GUIStyle() {
 				normal = new GUIStyleState() {
-					background = Resources.Load("Unifred/Texture/UI/button_normal") as Texture2D,
+					background = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Unifred/Image/UI/button_normal.png"),
 					textColor = Color.black,
 				},
 				active = new GUIStyleState() {
-					background = Resources.Load("Unifred/Texture/UI/button_pressed") as Texture2D,
+					background = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Unifred/Image/UI/button_pressed.png"),
 					textColor = Color.black,
 				},
 				border = new RectOffset(7, 8, 0, 0),
@@ -69,7 +69,7 @@ namespace Unifred
 
 			HeaderBottomSearchBox = new GUIStyle() {
 				normal = new GUIStyleState() {
-					background = Resources.Load("Unifred/Texture/UI/box") as Texture2D,
+					background = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Unifred/Image/UI/box.png"),
 					textColor = Color.black,
 				},
 				border = new RectOffset(10, 10, 10, 10),
@@ -117,7 +117,7 @@ namespace Unifred
 
 			GUIStyle thumb = new GUIStyle() {
 				normal = new GUIStyleState {
-					background = Resources.Load("Unifred/Texture/UI/slider") as Texture2D,
+					background = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Unifred/Image/UI/slider.png"),
 				},
 				name = scrollbar_name + "thumb",
 				border = new RectOffset(0, 0, 11, 11),
