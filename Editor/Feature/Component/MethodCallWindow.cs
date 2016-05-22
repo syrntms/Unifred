@@ -124,7 +124,7 @@ namespace Unifred.Feature
 			if (has_params) {
 				param_list  = new object[param_length];
 				for (int i = 0; i < param_length ; i++) {
-					param_list[i] = ScriptUtility.MakeValue(string_params[i], real_types[i]);
+					param_list[i] = ScriptUtility.Eval(string_params[i]);//, real_types[i]);
 				}
 			}
 

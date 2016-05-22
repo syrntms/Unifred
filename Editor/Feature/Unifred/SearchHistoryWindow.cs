@@ -59,7 +59,7 @@ namespace Unifred.Feature
 			case "HierarchyOrSearch":
 				return SearchHistoryObject.SearchMode.HierarchyOrSearch;
 			default:
-				throw new Exception("error history mode");
+				throw new Exception("error history mode[key = " + key + "]");
 			}
 		}
 
@@ -137,7 +137,8 @@ namespace Unifred.Feature
 
 	public class SearchHistoryObject
 	{
-		public enum SearchMode{
+		public enum SearchMode
+		{
 			AssetAndSearch,
 			AssetOrSearch,
 			HierarchyAndSearch,

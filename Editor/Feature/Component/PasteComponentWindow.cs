@@ -29,9 +29,10 @@ namespace Unifred.Feature
 		public override string GetDescription()
 		{
 			if (Selection.activeGameObject == null) {
-				return "<color=white>select game you want to paste component</color>";
+				return "<color=white>select game you wanna paste component</color>";
 			}
-			return "input component name you wanna to copy";
+			return "input component name you wanna copy. "
+				+ "<color=white>Ctrl</color> = AsNew.";
 		}
 
 		public override CandidateSelectMode GetSelectMode()

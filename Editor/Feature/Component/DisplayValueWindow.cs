@@ -10,15 +10,15 @@ using Object = System.Object;
 
 namespace Unifred.Feature
 {
-	public class ValueListWindow : UnifredWindowController<ValueListObject>
+	public class DisplayValueWindow : UnifredWindowController<DisplayValueObject>
 	{
 		public static void ShowWindow()
 		{
-			ShowWindow(new ValueList(), string.Empty);
+			ShowWindow(new DisplayValue(), string.Empty);
 		}
 	}
 
-	public class ValueList : UnifredFeatureBase<ValueListObject>
+	public class DisplayValue : UnifredFeatureBase<DisplayValueObject>
 	{
 
 		private static GUIStyle textGuiStyle = new GUIStyle {
@@ -37,12 +37,12 @@ namespace Unifred.Feature
 
 		public override CandidateSelectMode GetSelectMode()
 		{
-			return CandidateSelectMode.Single;
+			return CandidateSelectMode.Multiple;
 		}
 
-		public override IEnumerable<ValueListObject> UpdateCandidate(string word)
+		public override IEnumerable<DisplayValueObject> UpdateCandidate(string word)
 		{
-			List<ValueListObject> result = new List<ValueListObject>();
+			List<DisplayValueObject> result = new List<DisplayValueObject>();
             if (string.IsNullOrEmpty(word)) {
                 return result;
 			}
@@ -71,7 +71,7 @@ namespace Unifred.Feature
 					);
 
 					foreach (var property in properties) {
-						var item = new ValueListObject();
+						var item = new DisplayValueObject();
 						item.name		= property.Name;
 						item.component	= component;
 						item.property	= property;
@@ -96,7 +96,7 @@ namespace Unifred.Feature
 					);
 
 					foreach (var field in fields) {
-						var item = new ValueListObject();
+						var item = new DisplayValueObject();
 						item.name		= field.Name;
 						item.component	= component;
 						item.field		= field;
@@ -118,24 +118,20 @@ namespace Unifred.Feature
 
 		public override void Draw(
 			string word,
-			ValueListObject candidate,
+			DisplayValueObject candidate,
 			bool is_selected
 		) {
             GUILayout.Label(candidate.name, textGuiStyle);
 		}
 
-		public override void Select(string word, IEnumerable<ValueListObject> result_list)
+		public override void Select(string word, IEnumerable<DisplayValueObject> result_list)
 		{
-			ValueListObject result = result_list.First();
-			if (Input.IsPressedCommandKey()) {
-				ChangeValue(result);
-			}
-			else {
+			foreach (var result in result_list) {
 				Show(result);
 			}
 		}
 
-		private void Show(ValueListObject result)
+		private void Show(DisplayValueObject result)
 		{
 			var labelComponent = result.target.GetComponent<SceneWindowLabel>();
 			if (labelComponent == null) {
@@ -150,7 +146,7 @@ namespace Unifred.Feature
 			}
 		}
 
-		private void ChangeValue(ValueListObject result)
+		private void ChangeValue(DisplayValueObject result)
 		{
 			EditorApplication.delayCall += () => {
 				ChangeValueObject changeValueObject = new ChangeValueObject();
@@ -171,7 +167,7 @@ namespace Unifred.Feature
 	}
 
 
-	public class ValueListObject
+	public class DisplayValueObject
 	{
 		public string		name;
 		public GameObject	target;

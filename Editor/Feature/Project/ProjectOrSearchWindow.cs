@@ -45,7 +45,9 @@ namespace Unifred.Feature
 
 		public override string GetDescription()
 		{
-			return "input asset name you want <color=white>OR</color> search";
+			return "Input name you wanna search. "
+				+ "<color=white>Space</color> = OR. "
+				+ "<color=white>Ctrl</color> = FileOpen.";
 		}
 
 		public override CandidateSelectMode GetSelectMode()

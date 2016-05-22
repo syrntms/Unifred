@@ -33,7 +33,8 @@ namespace Unifred.Feature
 
 		public override string GetDescription()
 		{
-			return "input gameobject name you want <color=white> OR </color> search";
+			return "Input name you wanna search. "
+				+ "<color=white>Space</color> = OR. ";
 		}
 
 		public override CandidateSelectMode GetSelectMode()
@@ -94,12 +95,7 @@ namespace Unifred.Feature
 				};
 			}
 
-			if (Input.IsPressedCommandKey()) {
-				_ShowRenameWindow(result_list, word);
-			}
-			else {
-				_SelectObject(result_list);
-			}
+			_SelectObject(result_list);
 			_SaveHistory("HierarchyOrSearch", word);
 		}
 

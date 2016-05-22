@@ -29,9 +29,9 @@ namespace Unifred.Feature
 		public override string GetDescription()
 		{
 			if (Selection.activeGameObject == null) {
-				return "<color=white>select game you want to delete component</color>";
+				return "<color=white>select game you wanna delete component</color>";
 			}
-			return "input component name you wanna to delete";
+			return "input component name you wanna delete";
 		}
 
 		public override CandidateSelectMode GetSelectMode()

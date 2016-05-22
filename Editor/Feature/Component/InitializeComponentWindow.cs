@@ -29,9 +29,11 @@ namespace Unifred.Feature
 		public override string GetDescription()
 		{
 			if (Selection.activeGameObject == null) {
-				return "<color=white>select game object you want to Initialize</color>";
+				return "<color=white>select game object you wanna Initialize</color>";
 			}
-			return "input component name you wanna to Initialize";
+			return "input component name."
+				+ "<color=white>Space</color> = AND. "
+				+ "<color=white>Ctrl</color> = EmptyFieldOnly.";
 		}
 
 		public override CandidateSelectMode GetSelectMode()

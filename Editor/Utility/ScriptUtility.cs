@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System;
+using System.Text;
 using System.Linq;
 using System.Reflection;
 using System.CodeDom.Compiler;
@@ -11,38 +12,45 @@ namespace Unifred
 	public static class ScriptUtility
 	{
 
-		public static System.Object MakeValue(string value, Type type, IEnumerable<Type> assemblyTypes = null)
-		{
-			string source = @"
-				using UnityEngine;
-				public class ValueMaker
-				{
-				    public static " + type.ToString() + @" Eval()
-				    {
-						return " + value + @";
-				    }
-				}";
-			CodeDomProvider provider = new CSharpCodeProvider();
-			var paramater = new CompilerParameters();
-			paramater.GenerateInMemory = true;
-			//add unity engine location
-			paramater.ReferencedAssemblies.Add(typeof(MonoBehaviour).Assembly.Location);
+		// original http://www.codeproject.com/Articles/11939/Evaluate-C-Code-Eval-Function
+		public static object Eval(string sCSCode, IEnumerable<Type> assemblyTypes = null) {
 
-			assemblyTypes = assemblyTypes ?? Enumerable.Empty<Type>();
-			assemblyTypes.ForEach(
-				assemblyType => paramater.ReferencedAssemblies.Add(assemblyType.Assembly.Location)
-			);
+			CSharpCodeProvider c = new CSharpCodeProvider();
+			ICodeCompiler icc = c.CreateCompiler();
+			CompilerParameters cp = new CompilerParameters();
 
-			CompilerResults result = provider.CompileAssemblyFromSource(paramater, source);
-
-			Assembly asm = result.CompiledAssembly;
-			foreach (var err in result.Errors) {
-				Debug.Log("eval paramater has some error message:" + err.ToString());
+			cp.ReferencedAssemblies.Add("system.dll");
+			cp.ReferencedAssemblies.Add(typeof(MonoBehaviour).Assembly.Location);
+			if (assemblyTypes != null) {
+				assemblyTypes.ForEach(loadType => cp.ReferencedAssemblies.Add(loadType.Assembly.Location));
 			}
-			Type t = asm.GetType("ValueMaker");
 
-			return t.InvokeMember("Eval", BindingFlags.InvokeMethod, null, null, null);
+			cp.CompilerOptions = "/t:library";
+			cp.GenerateInMemory = true;
+
+			StringBuilder sb = new StringBuilder("");
+			sb.Append("using System;\n" );
+			sb.Append("namespace CSCodeEvaler{ \n");
+			sb.Append("public class CSCodeEvaler{ \n");
+			sb.Append("public object EvalCode(){\n");
+			sb.Append("return "+sCSCode+"; \n");
+			sb.Append("} \n");
+			sb.Append("} \n");
+			sb.Append("}\n");
+
+			CompilerResults cr = icc.CompileAssemblyFromSource(cp, sb.ToString());
+			if( cr.Errors.Count > 0 ){
+				return null;
+			}
+
+			System.Reflection.Assembly a = cr.CompiledAssembly;
+			object o = a.CreateInstance("CSCodeEvaler.CSCodeEvaler");
+
+			Type t = o.GetType();
+			MethodInfo mi = t.GetMethod("EvalCode");
+
+			object s = mi.Invoke(o, null);
+			return s;
 		}
-
 	}
 }

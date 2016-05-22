@@ -20,21 +20,31 @@ namespace Unifred.Feature
 	public class LauncherFeature : UnifredFeatureBase<LauncherObject>
 	{
 		public IEnumerable<LauncherObject>	LaunchedFeatureObjects = new List<LauncherObject>(){
-			new LauncherObject() {ClassType = typeof(ProjectAndSearchWindow),	Hotkey = "p  : ProjectSearch",		MethodName = "ShowWindow"},
-			new LauncherObject() {ClassType = typeof(HierarchyAndSearchWindow),	Hotkey = "h  : HierarchySearch",	MethodName = "ShowWindow"},
-			new LauncherObject() {ClassType = typeof(InitializeComponentWindow),Hotkey = "ci : ComponentInitialize",MethodName = "ShowWindow"},
-			new LauncherObject() {ClassType = typeof(MethodListWindow),			Hotkey = "cm : ComponentMethod",	MethodName = "ShowWindow"},
-			new LauncherObject() {ClassType = typeof(CopyComponentWindow),		Hotkey = "cc : ComponentCopy",		MethodName = "ShowWindow"},
-			new LauncherObject() {ClassType = typeof(DeleteComponentWindow),	Hotkey = "cd : ComponentDelete",	MethodName = "ShowWindow"},
-			new LauncherObject() {ClassType = typeof(PasteComponentWindow),		Hotkey = "cp : ComponentPaste",		MethodName = "ShowWindow"},
-			new LauncherObject() {ClassType = typeof(ValueListWindow),			Hotkey = "cv : ComponentValue",		MethodName = "ShowWindow"},
-			new LauncherObject() {ClassType = typeof(SearchHistoryWindow),		Hotkey = "u  : UnifredHistory",		MethodName = "ShowWindow"},
-			new LauncherObject() {ClassType = typeof(ManipulateConsole),		Hotkey = "d  : DebugClear",			MethodName = "Clear"},
-			new LauncherObject() {ClassType = typeof(ManipulateInspector),		Hotkey = "il : InspectorLock",		MethodName = "SwitchLock"},
-			new LauncherObject() {ClassType = typeof(IconSetupWindow),			Hotkey = "gi : GameobjectIcon",		MethodName = "ShowWindow"},
+			new LauncherObject() {ClassType = typeof(ProjectAndSearchWindow)   , Key = "p" , Explain = "Search file or open from project"       , Method = "ShowWindow"},
+			new LauncherObject() {ClassType = typeof(HierarchyAndSearchWindow) , Key = "h" , Explain = "Search object from hierarchy"           , Method = "ShowWindow"},
+			new LauncherObject() {ClassType = typeof(RenameTargetWindow)       , Key = "r" , Explain = "Search object that have renamed word"   , Method = "ShowWindow"},
+			new LauncherObject() {ClassType = typeof(InitializeComponentWindow), Key = "ci", Explain = "Initialize serialized value by name"    , Method = "ShowWindow"},
+			new LauncherObject() {ClassType = typeof(MethodListWindow)         , Key = "cm", Explain = "Call method of component"               , Method = "ShowWindow"},
+			new LauncherObject() {ClassType = typeof(CopyComponentWindow)      , Key = "cc", Explain = "Copy serialized value within component" , Method = "ShowWindow"},
+			new LauncherObject() {ClassType = typeof(DeleteComponentWindow)    , Key = "cd", Explain = "Delete component"                       , Method = "ShowWindow"},
+			new LauncherObject() {ClassType = typeof(PasteComponentWindow)     , Key = "cp", Explain = "Paste component from history you copied", Method = "ShowWindow"},
+			new LauncherObject() {ClassType = typeof(DisplayValueWindow)       , Key = "dv", Explain = "Display component value"                , Method = "ShowWindow"},
+			new LauncherObject() {ClassType = typeof(SearchHistoryWindow)      , Key = "u" , Explain = "Launch by history"          			, Method = "ShowWindow"},
+			new LauncherObject() {ClassType = typeof(ManipulateConsole)        , Key = "dc", Explain = "Clear console log"                      , Method = "Clear"}     ,
+			new LauncherObject() {ClassType = typeof(ManipulateInspector)      , Key = "i",  Explain = "Lock inspector"                         , Method = "SwitchLock"},
+			new LauncherObject() {ClassType = typeof(IconSetupWindow)          , Key = "g",  Explain = "Add icon to gameobject in sceneview"    , Method = "ShowWindow"},
 		};
 
-		private static GUIStyle textGuiStyle = new GUIStyle {
+		private static GUIStyle keyStyle = new GUIStyle {
+			richText = true,
+			fontSize = 12,
+			margin = new RectOffset(5, 5, 5, 5),
+			fixedWidth = 50,
+			alignment = TextAnchor.MiddleLeft,
+			normal = { textColor = Color.white, },
+		};
+
+		private static GUIStyle explainStyle = new GUIStyle {
 			richText = true,
 			fontSize = 12,
 			margin = new RectOffset(5, 5, 5, 5),
@@ -58,7 +68,7 @@ namespace Unifred.Feature
 			bool isCandidateAll = string.IsNullOrEmpty(word);
 
 			LaunchedFeatureObjects
-				.Where(x => isCandidateAll || x.Hotkey.StartsWith(word))
+				.Where(x => isCandidateAll || x.Key.StartsWith(word))
 				.ForEach(x => result.Add(x));
 			return result;
 		}	
@@ -68,7 +78,8 @@ namespace Unifred.Feature
 			LauncherObject candidate,
 			bool is_selected
 		) {
-            GUILayout.Label(candidate.Hotkey, textGuiStyle);
+            GUILayout.Label("key: " + candidate.Key,	keyStyle);
+			GUILayout.Label(candidate.Explain,			explainStyle);
 		}
 
 		public override void Select(string word, IEnumerable<LauncherObject> result_list)
@@ -76,7 +87,7 @@ namespace Unifred.Feature
 			LauncherObject result = result_list.First();
 			MethodInfo[] methods = result.ClassType.GetMethods();
 			MethodInfo method = methods
-				.Where(x => x.GetParameters().Count() == 0 && x.Name == result.MethodName)
+				.Where(x => x.GetParameters().Count() == 0 && x.Name == result.Method)
 				.FirstOrDefault();
 			if (method == null) {
 				return;
@@ -88,15 +99,17 @@ namespace Unifred.Feature
 
 		public override float GetRowHeight()
 		{
-			return textGuiStyle.CalcSize(new GUIContent("sample")).y
-				+ textGuiStyle.margin.bottom + textGuiStyle.margin.top;
+			return keyStyle.CalcSize(new GUIContent("sample")).y
+				+ keyStyle.margin.bottom + keyStyle.margin.top;
 		}
+
 	}
 
 	public class LauncherObject
 	{
 		public Type		ClassType;
-		public string	Hotkey;
-		public string	MethodName;
+		public string	Key;
+		public string	Explain;
+		public string	Method;
 	};
 }

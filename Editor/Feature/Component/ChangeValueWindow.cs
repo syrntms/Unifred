@@ -77,13 +77,13 @@ namespace Unifred.Feature
 			if (candidate.field != null) {
 				candidate.field.SetValue(
 					candidate.component,
-					ScriptUtility.MakeValue(word, candidate.field.FieldType)
+					ScriptUtility.Eval(word)
 				);
 			}
 			else if (candidate.property != null) {
 				candidate.property.SetValue(
 					candidate.component,
-					ScriptUtility.MakeValue(word, candidate.property.PropertyType),
+					ScriptUtility.Eval(word),
 					null
 				);
 			}
