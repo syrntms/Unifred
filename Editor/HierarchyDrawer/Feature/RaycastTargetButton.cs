@@ -80,14 +80,13 @@ namespace Unifred
 			instance.IsEnable = true;
 			HierarchyDrawerManager.AddDrawer(instance);
 			onButtonTexture = AssetDatabase.LoadAssetAtPath(
-				"Assets/Unifred/Image/Icon/Alice.png",
+				"Assets/Unifred/Image/Icon/RayOn.png",
 				typeof(Texture2D)
 			) as Texture2D;
 			offButtonTexture = AssetDatabase.LoadAssetAtPath(
-				"Assets/Unifred/Image/Icon/Bob.png",
+				"Assets/Unifred/Image/Icon/RayOff.png",
 				typeof(Texture2D)
 			) as Texture2D;
-
 		}
 	}
 }
