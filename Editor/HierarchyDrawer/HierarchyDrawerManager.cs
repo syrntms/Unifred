@@ -10,8 +10,8 @@ namespace Unifred
 	[InitializeOnLoad]
 	public class HierarchyDrawerManager
 	{
-		private static float saveTime = 0f;
-		private const float SecondPerCheck = 0.1f;
+		private static double lastTime = 0f;
+		private const float SecondPerCheck = 0.3f;
 		public static List<IHierarchyDrawer> list = new List<IHierarchyDrawer>();
 		private static Dictionary<Type, Dictionary<int, object>> updateRecord
 			= new Dictionary<Type, Dictionary<int, object>>();
@@ -37,11 +37,11 @@ namespace Unifred
 
 		private static void updateHierarchy()
 		{
-			saveTime += Time.unscaledDeltaTime;
-			if (saveTime < SecondPerCheck) {
+			var currentTime = EditorApplication.timeSinceStartup;
+			if (currentTime - lastTime < SecondPerCheck) {
 				return;
 			}
-			saveTime = 0f;
+			lastTime = currentTime;
 
 			var go_list = GameObjectUtility.FindAllInHierarchy();
 			foreach (var drawer in list) {
@@ -53,6 +53,9 @@ namespace Unifred
 				foreach (var go in go_list) {
 					int id = go.GetInstanceID();
 					object data = drawer.UpdateData(id);
+					if (data == null) {
+						continue;
+					}
 					updateRecord[type][id] = data;
 				}
 			}
@@ -64,13 +67,13 @@ namespace Unifred
 			Rect r = new Rect(selectionRect);
 			r.x = r.xMax;
 			foreach (var drawer in list) {
-				var type = drawer.GetType();
-				bool isDraw = drawer.OnGUI(r, instanceID, updateRecord[type]);
-				if (!isDraw) {
+				if (!drawer.IsEnable) {
 					continue;
 				}
-				r.x -= 18;
-				r.width = 20;
+				var type = drawer.GetType();
+				drawer.OnGUI(ref r, instanceID, updateRecord[type]);
+//				r.x -= (18 * count);
+//				r.width = (20 * count);
 			}
 		}
 	}

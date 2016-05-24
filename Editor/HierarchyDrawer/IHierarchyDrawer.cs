@@ -12,7 +12,7 @@ namespace Unifred
 			set;
 		}
 		int GetPriority();
-		bool OnGUI(Rect r, int instanceID, Dictionary<int, object> log);
+		void OnGUI(ref Rect r, int instanceID, Dictionary<int, object> log);
 		object UpdateData(int instanceId);
 	}
 }
