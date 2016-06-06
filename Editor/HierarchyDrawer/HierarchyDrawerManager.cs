@@ -12,7 +12,7 @@ namespace Unifred
 	{
 		private static double lastTime = 0f;
 		private const float SecondPerCheck = 0.3f;
-		public static List<IHierarchyDrawer> list = new List<IHierarchyDrawer>();
+		public static List<HierarchyDrawerBase> list = new List<HierarchyDrawerBase>();
 		private static Dictionary<Type, Dictionary<int, object>> updateRecord
 			= new Dictionary<Type, Dictionary<int, object>>();
 
@@ -22,7 +22,7 @@ namespace Unifred
 			EditorApplication.update += updateHierarchy;
 		}
 
-		public static void AddDrawer(IHierarchyDrawer drawer)
+		public static void AddDrawer(HierarchyDrawerBase drawer)
 		{
 			list.Add(drawer);
 			list = list.Distinct()
@@ -47,7 +47,7 @@ namespace Unifred
 			foreach (var drawer in list) {
 				var type = drawer.GetType();
 				updateRecord[type].Clear();
-				if (!drawer.IsEnable) {
+				if (!drawer.GetEnabled()) {
 					continue;
 				}
 				foreach (var go in go_list) {
@@ -58,6 +58,8 @@ namespace Unifred
 					}
 					updateRecord[type][id] = data;
 				}
+				Dictionary<int, object> dataList = updateRecord[type];
+				drawer.FixedUpdate(ref dataList);
 			}
 			EditorApplication.RepaintHierarchyWindow();
 		}
@@ -67,13 +69,11 @@ namespace Unifred
 			Rect r = new Rect(selectionRect);
 			r.x = r.xMax;
 			foreach (var drawer in list) {
-				if (!drawer.IsEnable) {
+				if (!drawer.GetEnabled()) {
 					continue;
 				}
 				var type = drawer.GetType();
 				drawer.OnGUI(ref r, instanceID, updateRecord[type]);
-//				r.x -= (18 * count);
-//				r.width = (20 * count);
 			}
 		}
 	}

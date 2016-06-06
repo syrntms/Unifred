@@ -8,7 +8,7 @@
 //namespace Unifred
 //{
 //	[InitializeOnLoad]
-//	public class OverridePrefabIconExtension : IHierarchyDrawer
+//	public class OverridePrefabIconExtension : HierarchyDrawerBase
 //	{
 //		public bool OnGUI(Rect r, int instanceID, Dictionary<int, object> log)
 //		{

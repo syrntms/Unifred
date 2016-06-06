@@ -8,13 +8,13 @@ using System.Collections.Generic;
 namespace Unifred
 {
 	[InitializeOnLoad]
-	public class RaycastTargetButton : IHierarchyDrawer
+	public class RaycastTargetButton : HierarchyDrawerBase
 	{
-		private const float iconSize = 16;
-		private const float iconXOffset = 20;
+		protected override int ScaleX { get{return 20;}}
 
-		public void OnGUI(ref Rect r, int instanceId, Dictionary<int, object> log)
+		public override void OnGUI(ref Rect r, int instanceId, Dictionary<int, object> log)
 		{
+			r = CalcRect(r);
 			object result;
 			bool is_exist = log.TryGetValue(instanceId, out result);
 			if (!is_exist) {
@@ -23,9 +23,6 @@ namespace Unifred
 
 			bool is_changed = false;
 			bool next_state = false;
-
-			r.width = r.height = iconSize;
-			r.x		-= iconXOffset;
 
 			if (!is_exist || !(bool)result) {
 				bool isPress = GUI.Button(r, offButtonTexture, GUIStyle.none);
@@ -54,7 +51,7 @@ namespace Unifred
 			graphic.raycastTarget = next_state; 
 		}
 
-		public object UpdateData(int instanceId)
+		public override object UpdateData(int instanceId)
 		{
 			var go = EditorUtility.InstanceIDToObject(instanceId) as GameObject;
 			var graphic = go.GetComponent<Graphic>();
@@ -64,12 +61,15 @@ namespace Unifred
 			return graphic.raycastTarget;
 		}
 
-		public int GetPriority()
+		public override int GetPriority()
 		{
-			return 0;
+			return 10;
 		}
 
-		public bool IsEnable { get; set; }
+
+		public override void FixedUpdate(ref Dictionary<int, object> data)
+		{
+		}
 
 		private static Texture2D onButtonTexture;
 		private static Texture2D offButtonTexture;
@@ -77,7 +77,7 @@ namespace Unifred
 		static RaycastTargetButton()
 		{
 			var instance = new RaycastTargetButton();
-			instance.IsEnable = true;
+
 			HierarchyDrawerManager.AddDrawer(instance);
 			onButtonTexture = AssetDatabase.LoadAssetAtPath(
 				"Assets/Unifred/Image/Icon/RayOn.png",
