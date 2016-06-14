@@ -3,23 +3,24 @@ using UnityEditor;
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using Unifred;
 
 namespace Unifred
 {
-	public enum MissingScriptState
+	public enum ScaledRectTransformState
 	{
-		MissingScriptOwn,
-		MissingScriptChild,
+		ScaledOwn,
+		ScaledChild,
 	}
 
-	public class MissingScriptObject
+	public class ScaledRectTransformObject
 	{
-		public MissingScriptState State;
+		public ScaledRectTransformState state;
 		public int id;
 	}
 
 	[InitializeOnLoad]
-	public class MissingScriptIcon : HierarchyDrawerBase
+	public class ScaledRectTransformIcon : HierarchyDrawerBase
 	{
 		protected override int ScaleX { get{return 20;}}
 
@@ -39,19 +40,22 @@ namespace Unifred
 				return;
 			}
 
-			MissingScriptObject obj = (MissingScriptObject)result_raw;
-			bool is_pressed = false;
-			switch (obj.State) {
-				case MissingScriptState.MissingScriptOwn:
-					is_pressed = GUI.Button(r, missingIconTexture, GUIStyle.none);
-					if (is_pressed) {
-						Selection.activeGameObject = EditorUtility.InstanceIDToObject(instanceId) as GameObject;
+			ScaledRectTransformObject result = ((ScaledRectTransformObject)result_raw);
+
+			bool isPressed = false;
+			switch (result.state) {
+				case ScaledRectTransformState.ScaledOwn:
+					isPressed = GUI.Button(r, scaledIcon, GUIStyle.none);
+					if (isPressed) {
+						var go = EditorUtility.InstanceIDToObject(instanceId) as GameObject;
+						var rect = go.GetComponent<RectTransform>();
+						rect.localScale = Vector3.one;
 					}
 					break;
-				case MissingScriptState.MissingScriptChild:
-					is_pressed = GUI.Button(r, missingIconTexture, GUIStyle.none);
-					if (is_pressed) {
-						Selection.activeGameObject = EditorUtility.InstanceIDToObject(obj.id) as GameObject;
+				case ScaledRectTransformState.ScaledChild:
+					isPressed = GUI.Button(r, scaledIcon, GUIStyle.none);
+					if (isPressed) {
+						Selection.activeGameObject = EditorUtility.InstanceIDToObject(result.id) as GameObject;
 					}
 					break;
 			}
@@ -59,23 +63,15 @@ namespace Unifred
 		}
 
 		/// <summary>
-		/// detecte own object whether script was missed or not.
+		/// detecte own object whether RectTransform was normalized or not.
 		/// </summary>
 		/// <returns>The data.</returns>
 		/// <param name="instanceId">Instance identifier.</param>
 		public override object UpdateData(int instanceId)
 		{
 			var go = EditorUtility.InstanceIDToObject(instanceId) as GameObject;
-
-			bool is_missing = HasMissingScript(go);
-			if (is_missing) {
-				var result = new MissingScriptObject();
-				result.State = MissingScriptState.MissingScriptOwn;
-				return result;
-			}
-			else {
-				return null;
-			}
+			var rect = go.GetComponent<RectTransform>();
+			return GetScaledRectTransformObject(rect);
 		}
 
 		/// <summary>
@@ -86,7 +82,6 @@ namespace Unifred
 		public override void FixedUpdate(ref Dictionary<int, object> data)
 		{
 			Dictionary<int, int> listDetectedByChildren = new Dictionary<int, int>();
-
 			foreach (var pair in data) {
 				var instance = EditorUtility.InstanceIDToObject(pair.Key) as GameObject;
 				var parents = instance.GetComponentsInParent<Transform>().Select(t => t.gameObject);
@@ -100,22 +95,29 @@ namespace Unifred
 				}
 			}
 
-			foreach (var pair in listDetectedByChildren) {
-				var result = new MissingScriptObject();
-				result.State = MissingScriptState.MissingScriptChild;
-				result.id = pair.Value;
-				data.Add(pair.Key, result);
+			foreach (var parentToChild in listDetectedByChildren) {
+				var result = new ScaledRectTransformObject();
+				result.state = ScaledRectTransformState.ScaledChild;
+				result.id = parentToChild.Value;
+				data.Add(parentToChild.Key, result);
 			}
 		}
 
-		public bool HasMissingScript(GameObject go)
+		public ScaledRectTransformObject GetScaledRectTransformObject(RectTransform rect)
 		{
-			var components = go.GetComponents<Component>();
-			bool isDisplay = components.Any(component => component == null);
-			if (isDisplay) {
-				return true;
+			if (rect == null) {
+				return null;
 			}
-			return false;
+
+			if ( !Mathf.Approximately(rect.localScale.x , 1f)
+				|| !Mathf.Approximately(rect.localScale.y , 1f)
+				|| !Mathf.Approximately(rect.localScale.z , 1f)
+			){
+				var obj = new ScaledRectTransformObject();
+				obj.state = ScaledRectTransformState.ScaledOwn;
+				return obj;
+			}
+			return null;
 		}
 
 		public override int GetPriority()
@@ -123,15 +125,15 @@ namespace Unifred
 			return 0;
 		}
 
-		private static Texture2D missingIconTexture;
+		private static Texture2D scaledIcon;
 
-		static MissingScriptIcon()
+		static ScaledRectTransformIcon()
 		{
-			var instance = new MissingScriptIcon();
+			var instance = new ScaledRectTransformIcon();
 
 			HierarchyDrawerManager.AddDrawer(instance);
-			missingIconTexture = AssetDatabase.LoadAssetAtPath(
-				"Assets/Unifred/Image/Icon/RayOff.png",
+			scaledIcon = AssetDatabase.LoadAssetAtPath(
+				"Assets/Unifred/Image/Icon/ScaledRectTransform.png",
 				typeof(Texture2D)
 			) as Texture2D;
 		}
