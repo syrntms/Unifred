@@ -89,7 +89,7 @@ namespace Unifred
 					int id = parent.GetInstanceID();
 					bool is_exist = data.ContainsKey(id);
 					bool is_detect = listDetectedByChildren.ContainsKey(id);
-					if (!is_exist) {
+					if (!is_exist && !is_detect) {
 						listDetectedByChildren.Add(id, pair.Key);
 					}
 				}
