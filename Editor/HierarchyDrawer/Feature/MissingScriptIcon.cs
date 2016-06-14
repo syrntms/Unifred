@@ -43,13 +43,13 @@ namespace Unifred
 			bool is_pressed = false;
 			switch (obj.State) {
 				case MissingScriptState.MissingScriptOwn:
-					is_pressed = GUI.Button(r, missingIconTexture, GUIStyle.none);
+					is_pressed = GUI.Button(r, icon, GUIStyle.none);
 					if (is_pressed) {
 						Selection.activeGameObject = EditorUtility.InstanceIDToObject(instanceId) as GameObject;
 					}
 					break;
 				case MissingScriptState.MissingScriptChild:
-					is_pressed = GUI.Button(r, missingIconTexture, GUIStyle.none);
+					is_pressed = GUI.Button(r, icon, GUIStyle.none);
 					if (is_pressed) {
 						Selection.activeGameObject = EditorUtility.InstanceIDToObject(obj.id) as GameObject;
 					}
@@ -123,15 +123,15 @@ namespace Unifred
 			return 0;
 		}
 
-		private static Texture2D missingIconTexture;
+		private static Texture2D icon;
 
 		static MissingScriptIcon()
 		{
 			var instance = new MissingScriptIcon();
 
 			HierarchyDrawerManager.AddDrawer(instance);
-			missingIconTexture = AssetDatabase.LoadAssetAtPath(
-				"Assets/Unifred/Image/Icon/RayOff.png",
+			icon = AssetDatabase.LoadAssetAtPath(
+				"Assets/Unifred/Image/Icon/MissingScript.png",
 				typeof(Texture2D)
 			) as Texture2D;
 		}
