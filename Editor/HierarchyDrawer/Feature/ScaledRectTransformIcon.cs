@@ -109,6 +109,11 @@ namespace Unifred
 				return null;
 			}
 
+			// キャンバスは必ずスケールするので除外する
+			if (rect.GetComponent<Canvas>() != null) {
+				return null;
+			}
+
 			if ( !Mathf.Approximately(rect.localScale.x , 1f)
 				|| !Mathf.Approximately(rect.localScale.y , 1f)
 				|| !Mathf.Approximately(rect.localScale.z , 1f)
