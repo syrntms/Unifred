@@ -43,12 +43,14 @@ namespace Unifred
 			bool is_pressed = false;
 			switch (obj.State) {
 				case MissingScriptState.MissingScriptOwn:
+					GUI.color = Color.white;
 					is_pressed = GUI.Button(r, icon, GUIStyle.none);
 					if (is_pressed) {
 						Selection.activeGameObject = EditorUtility.InstanceIDToObject(instanceId) as GameObject;
 					}
 					break;
 				case MissingScriptState.MissingScriptChild:
+					GUI.color = Color.gray;
 					is_pressed = GUI.Button(r, icon, GUIStyle.none);
 					if (is_pressed) {
 						Selection.activeGameObject = EditorUtility.InstanceIDToObject(obj.id) as GameObject;

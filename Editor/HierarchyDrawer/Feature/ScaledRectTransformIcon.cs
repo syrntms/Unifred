@@ -45,6 +45,7 @@ namespace Unifred
 			bool isPressed = false;
 			switch (result.state) {
 				case ScaledRectTransformState.ScaledOwn:
+					GUI.color = Color.white;
 					isPressed = GUI.Button(r, scaledIcon, GUIStyle.none);
 					if (isPressed) {
 						var go = EditorUtility.InstanceIDToObject(instanceId) as GameObject;
@@ -53,6 +54,7 @@ namespace Unifred
 					}
 					break;
 				case ScaledRectTransformState.ScaledChild:
+					GUI.color = Color.gray;
 					isPressed = GUI.Button(r, scaledIcon, GUIStyle.none);
 					if (isPressed) {
 						Selection.activeGameObject = EditorUtility.InstanceIDToObject(result.id) as GameObject;

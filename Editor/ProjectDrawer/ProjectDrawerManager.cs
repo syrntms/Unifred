@@ -10,7 +10,7 @@ namespace Unifred
 	[InitializeOnLoad]
 	public class ProjectDrawerManager
 	{
-		private static double lastTime = 0f;
+//		private static double lastTime = 0f;
 		private const float SecondPerCheck = 0.3f;
 		public static List<ProjectDrawerBase> list = new List<ProjectDrawerBase>();
 		private static Dictionary<Type, Dictionary<int, object>> updateRecord

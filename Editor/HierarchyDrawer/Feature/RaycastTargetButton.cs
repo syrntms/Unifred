@@ -23,6 +23,7 @@ namespace Unifred
 
 			bool is_changed = false;
 			bool next_state = false;
+			GUI.color = Color.white;
 
 			if (!is_exist || !(bool)result) {
 				bool isPress = GUI.Button(r, offButtonTexture, GUIStyle.none);

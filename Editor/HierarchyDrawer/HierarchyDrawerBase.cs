@@ -27,7 +27,7 @@ namespace Unifred
 		protected virtual Rect CalcRect(Rect r) {
 			r.height = 16;
 			r.width = ScaleX;
-			r.x -= (ScaleX - 4);
+			r.x -= 20;
 			return r;
 		}
 		public abstract int GetPriority();
