@@ -57,6 +57,7 @@ namespace Unifred
 					}
 					break;
 			}
+			GUI.color = Color.white;
 			return;
 		}
 
