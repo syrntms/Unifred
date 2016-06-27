@@ -34,14 +34,14 @@ namespace Unifred.Feature
 			new LauncherObject() {ClassType = typeof(ManipulateInspector)      , Key = "i",  Explain = "Lock inspector"                         , Method = "SwitchLock"},
 			new LauncherObject() {ClassType = typeof(IconSetupWindow)          , Key = "g",  Explain = "Add icon to gameobject in sceneview"    , Method = "ShowWindow"},
 			new LauncherObject() {ClassType = typeof(HierarchyDrawerActivateWindow), Key = "ahd",  Explain = "Activation HierarchyDrawer"    , Method = "ShowWindow"},
-			new LauncherObject() {ClassType = typeof(ProjectDrawerActivateWindow), Key = "apd",  Explain = "Activation ProjectDrawer"    , Method = "ShowWindow"},
+//			new LauncherObject() {ClassType = typeof(ProjectDrawerActivateWindow), Key = "apd",  Explain = "Activation ProjectDrawer"    , Method = "ShowWindow"},
 		};
 
 		private static GUIStyle keyStyle = new GUIStyle {
 			richText = true,
 			fontSize = 12,
 			margin = new RectOffset(5, 5, 5, 5),
-			fixedWidth = 50,
+			fixedWidth = 70,
 			alignment = TextAnchor.MiddleLeft,
 			normal = { textColor = Color.white, },
 		};
@@ -80,8 +80,8 @@ namespace Unifred.Feature
 			LauncherObject candidate,
 			bool is_selected
 		) {
-            GUILayout.Label("key: " + candidate.Key,	keyStyle);
-			GUILayout.Label(candidate.Explain,			explainStyle);
+			GUILayout.Label("key: " + candidate.Key.ToUpper(),	keyStyle);
+			GUILayout.Label(candidate.Explain,					explainStyle);
 		}
 
 		public override void Select(string word, IEnumerable<LauncherObject> result_list)
