@@ -31,8 +31,6 @@ namespace Unifred
 			return r;
 		}
 		public abstract int GetPriority();
-		public abstract void OnGUI(ref Rect r, string guid, Dictionary<int, object> log);
-		public abstract object UpdateData(int instanceId);
-		public abstract void FixedUpdate(ref Dictionary<int, object> data);
+		public abstract void OnGUI(ref Rect r, string guid);
 	}
 }
