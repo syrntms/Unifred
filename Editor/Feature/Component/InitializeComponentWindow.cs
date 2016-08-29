@@ -150,6 +150,7 @@ namespace Unifred.Feature
 		{
 			// find from children
 			GameObject child = root.GetComponentsInChildren<Component>(true)
+				.Where( c => c != null)
 				.Select( c => c.gameObject )
 				.Distinct()
 				.Where( go => go.name.IndexOf(name, StringComparison.OrdinalIgnoreCase) >= 0 )

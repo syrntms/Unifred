@@ -41,7 +41,7 @@ namespace Unifred
 
 			var isIllegal = AssetDatabase.LoadAllAssetsAtPath(path)
 				.OfType<Sprite>()
-				.Any(s => tex.width > (int)(s.border.x + s.border.z) || tex.height > (int)(s.border.y + s.border.w));
+				.Any(s => tex.width < (int)(s.border.x + s.border.z) || tex.height < (int)(s.border.y + s.border.w));
 			return isIllegal;
 		}
 

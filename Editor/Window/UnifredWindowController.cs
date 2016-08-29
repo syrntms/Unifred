@@ -17,6 +17,7 @@ namespace Unifred
 		private bool isScrollToSelected = false;
 		private bool isExecuteFromMouse = false;
 		private Action onGuiOnceAction = null;
+		private bool isCloseImmediately = false;
 
 
 		protected static void ShowWindow(UnifredFeatureBase<T> instance, string input)
@@ -67,12 +68,19 @@ namespace Unifred
 				return;
 			}
 
-			if (_IsSelectBySingleImmediately()) {
-				_SetupSelectedListBySingleImmediately();
-				_OnPressedDoneKey();
-				window.Close();
-				return;
+			if (_IsSelectBySingleImmediately() && !isCloseImmediately) {
+				EditorApplication.delayCall += SelectImmediately();
+				isCloseImmediately = true;
 			}
+		}
+
+		private void SelectImmediately()
+		{
+			var window = EditorWindow.GetWindow<UnifredWindow>();
+			_SetupSelectedListBySingleImmediately();
+			_OnPressedDoneKey();
+			window.Close();
+			return;
 		}
 
 		private bool _IsScrollBarEvent()
@@ -541,6 +549,7 @@ namespace Unifred
 			selectedList.Clear();
 			this.feature = instance;
 			instance.OnInit();
+			isCloseImmediately = false;
 			onGuiOnceAction = () => {_ResizeWindow(); Styles.Setup();};
 
 			UnifredWindow.OnGUIAction = OnGUI;

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEditor;
 using System;
 using System.Linq;
@@ -33,7 +33,6 @@ namespace Unifred
 				if (!drawer.GetEnabled()) {
 					continue;
 				}
-				var type = drawer.GetType();
 			drawer.OnGUI(ref r, guid);
 			}
 		}
