@@ -69,7 +69,7 @@ namespace Unifred
 			}
 
 			if (_IsSelectBySingleImmediately() && !isCloseImmediately) {
-				EditorApplication.delayCall += SelectImmediately();
+				EditorApplication.delayCall += SelectImmediately;
 				isCloseImmediately = true;
 			}
 		}
