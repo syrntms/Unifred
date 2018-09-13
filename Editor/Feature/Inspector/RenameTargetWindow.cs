@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Collections;
+using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -47,16 +48,26 @@ namespace Unifred.Feature
                 return result;
 			}
 
-			var gameobjects = GameObjectUtility.FindAllInHierarchy();
+			IEnumerable<GameObject> gameobjects = Selection.gameObjects;
+			if (gameobjects == null || gameobjects.Count() == 0) {
+				gameobjects = GameObjectUtility.FindAllInHierarchy();
+			}
+
 			foreach (var gameobject in gameobjects) {
-				var is_in_name = gameobject.name.IndexOf(word, StringComparison.OrdinalIgnoreCase) >= 0;
-				if (!is_in_name) {
+				try{
+					bool is_match = Regex.IsMatch(gameobject.name, word);
+					if (!is_match) {
+						continue;
+					}
+					RenameTargetObject content = new RenameTargetObject() {
+						gameObject = gameobject,
+					};
+					result.Add(content);
+				}
+				catch(ArgumentException){
+					// "("など特殊文字を含むパターンを入力途中でパースエラーが発生するため
 					continue;
 				}
-				RenameTargetObject content = new RenameTargetObject() {
-					gameObject = gameobject,
-				};
-				result.Add(content);
 			}
 			return result;
 		}	

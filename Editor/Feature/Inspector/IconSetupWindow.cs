@@ -18,6 +18,7 @@ namespace Unifred.Feature
 
 	public class IconSetup : UnifredFeatureBase<IconSetupObject>
 	{
+		private const string deleteIconName = "None";
 		private static GUIStyle textGuiStyle = new GUIStyle {
 			richText = true,
 			fontSize = 12,
@@ -76,6 +77,12 @@ namespace Unifred.Feature
 				return;
 			}
 
+			if (result.name == deleteIconName) {
+				Selection.gameObjects.ForEach( go => _UnsetIcon(go) );
+				return;
+			}
+
+
 			Selection.gameObjects.ForEach( go => _SetIcon(go, result.content) );
 		}
 
@@ -83,6 +90,19 @@ namespace Unifred.Feature
 		{
 			return textGuiStyle.CalcSize(new GUIContent("sample")).y
 				+ textGuiStyle.margin.bottom + textGuiStyle.margin.top;
+		}
+
+		private static void _UnsetIcon(GameObject gameObject)
+		{
+			var setIcon = typeof(EditorGUIUtility).GetMethod(
+				"SetIconForObject",
+				BindingFlags.InvokeMethod | BindingFlags.Static | BindingFlags.NonPublic,
+				null,
+				new Type[]{typeof(UnityEngine.Object), typeof(Texture2D)},
+				null
+			);
+			object[] param = new object[]{gameObject, null};
+			setIcon.Invoke(null, param);
 		}
 
 		private static void _SetIcon(GameObject gameObject, GUIContent content)
@@ -105,6 +125,7 @@ namespace Unifred.Feature
 				new {template = "sv_icon_name{0}",				startIndex = 0, count = 8 },
 				new {template = "sv_icon_dot{0}_sml",			startIndex = 0, count = 16},
 				new {template = "sv_icon_dot{0}_pix16_gizmo",	startIndex = 0, count = 16},
+				new {template =  deleteIconName,				startIndex = 0, count = 1},
 			};
 
 			return list.SelectMany( x => _GetTextures(x.template, x.startIndex, x.count) );

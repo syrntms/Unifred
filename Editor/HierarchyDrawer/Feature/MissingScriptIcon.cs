@@ -114,11 +114,43 @@ namespace Unifred
 		public bool HasMissingScript(GameObject go)
 		{
 			var components = go.GetComponents<Component>();
-			bool isDisplay = components.Any(component => component == null);
-			if (isDisplay) {
-				return true;
+
+			foreach (var component in components) {
+
+				if (component == null) {
+					return true;
+				}
+
+				var serializeObject = new SerializedObject(component);
+				var iterator = serializeObject.GetIterator();
+
+				while (iterator.Next(true)) {
+					if (iterator.propertyType != SerializedPropertyType.ObjectReference) {
+						continue;
+					}
+
+					if (IsExcludeDisplayName(iterator.displayName)) {
+						continue;
+					}
+
+					if (iterator.objectReferenceValue == null) {
+						return true;
+					}
+				}
 			}
 			return false;
+		}
+
+		public bool IsExcludeDisplayName(string displayName)
+		{
+			string[] excludeTargets = new string[] {
+				"Prefab Parent Object",
+				"Prefab Internal",
+				"Father",
+				"Icon",
+			};
+
+			return excludeTargets.Any(exclude => exclude == displayName);
 		}
 
 		public override int GetPriority()

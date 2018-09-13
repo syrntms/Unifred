@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
@@ -22,7 +23,7 @@ namespace Unifred.Feature
 		private string from;
 		public Rename(IEnumerable<GameObject> list, string word)
 		{
-			this.list = list.Select( item => new RenameObject(){ gameObject = item, } );
+			this.list = list.Select( (item, index) => new RenameObject(){ gameObject = item, order = index} );
 			from = word;
 		}
 
@@ -55,17 +56,28 @@ namespace Unifred.Feature
 			bool is_selected
 		) {
 			string output = string.Empty;
-			int start = candidate.gameObject.name.IndexOf(from, StringComparison.OrdinalIgnoreCase);
-			int count = from.Length;
+			var matchCollection = Regex.Matches(candidate.gameObject.name, from).Cast<Match>().OrderByDescending(t => t.Index);
 
 			if (string.IsNullOrEmpty(word)) {
-				output = candidate.gameObject.name
-					.Insert(start + count, "</color>")
-					.Insert(start, "<color=#00AFFF>");
-			}
-			else {
-				string oldWord = candidate.gameObject.name.Substring(start, count);
-				output = candidate.gameObject.name.Replace(oldWord, "<color=#00AFFF>" + word + "</color>");
+				output = candidate.gameObject.name;
+				foreach (var match in matchCollection) {
+					var before = output.Substring(0, match.Index);
+					var after = output.Substring(match.Index + match.Length);
+					output = before + "<color=#00AFFF>"+ match.Value + "</color>" + after;
+				}
+			} else {
+				output = candidate.gameObject.name;
+				foreach (var match in matchCollection) {
+					var before = output.Substring(0, match.Index);
+					var after = output.Substring(match.Index + match.Length);
+					output = before + "<color=#00AFFF>"+ word + "</color>" + after;
+				}
+				try{
+					string.Format(output, candidate.order);
+				}
+				catch(FormatException) {
+					// 入力途中ではパースできない公文になっていてエラーになるケースが考えられる
+				}
 			}
 
             GUILayout.Label(output, textGuiStyle);
@@ -76,10 +88,24 @@ namespace Unifred.Feature
 			IEnumerable<RenameObject> result_list
 		) {
 			foreach(var candidate in list) {
-				int start = candidate.gameObject.name.IndexOf(from, StringComparison.OrdinalIgnoreCase);
-				int count = from.Length;
-				string oldWord = candidate.gameObject.name.Substring(start, count);
-				candidate.gameObject.name = candidate.gameObject.name.Replace(oldWord, word);
+				var matchCollection = Regex.Matches(candidate.gameObject.name, from).Cast<Match>().OrderByDescending(t => t.Index);
+				string output = string.Empty;
+
+				if (string.IsNullOrEmpty(word)) {
+					foreach (var match in matchCollection) {
+						var before = output.Substring(0, match.Index);
+						var after = output.Substring(match.Index + match.Length);
+						output = before + after;
+					}
+				} else {
+					output = candidate.gameObject.name;
+					foreach (var match in matchCollection) {
+						var before = output.Substring(0, match.Index);
+						var after = output.Substring(match.Index + match.Length);
+						output = string.Format(before + word + after, candidate.order);
+					}
+				}
+				candidate.gameObject.name = output;
 			}
 		}
 
@@ -93,5 +119,6 @@ namespace Unifred.Feature
 	public class RenameObject
 	{
 		public GameObject gameObject;
+		public int order;
 	};
 }
