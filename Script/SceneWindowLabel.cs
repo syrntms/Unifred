@@ -11,11 +11,17 @@ namespace Unifred
 	{
 		public void Add(Component c, FieldInfo fieldInfo)
 		{
+			if (list.Any(s => s.component.GetType() == c.GetType() && s.field.Name == fieldInfo.Name)) {
+				return;
+			}
 			list.Add(new SceneWindowLabelObject(){component = c, field = fieldInfo,});
 		}
 
 		public void Add(Component c, PropertyInfo propertyInfo)
 		{
+			if (list.Any(s => s.component.GetType() == c.GetType() && s.property.Name == propertyInfo.Name)) {
+				return;
+			}
 			list.Add(new SceneWindowLabelObject(){component = c, property = propertyInfo,});
 		}
 
