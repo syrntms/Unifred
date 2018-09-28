@@ -177,7 +177,7 @@ namespace Unifred
 				Styles.Body,
 			};
 			offset += topStyleIndexes.Sum(style => style.margin.top + style.padding.top);
-			return offset + styleIndexes.Count();
+			return offset;
 		}
 
 		/// <summary>
