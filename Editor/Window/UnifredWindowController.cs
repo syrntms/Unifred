@@ -503,9 +503,9 @@ namespace Unifred
 
 			//header bottom
 			const string controlName = "search_word";
+			GUILayout.BeginHorizontal(Styles.HeaderBottom);
 			GUI.SetNextControlName(controlName);
             GUI.FocusControl(controlName);
-			GUILayout.BeginHorizontal(Styles.HeaderBottom);
 			searchWord = GUILayout.TextField(
 				(searchWord ?? ""),
 				Styles.HeaderBottomSearchBox,
