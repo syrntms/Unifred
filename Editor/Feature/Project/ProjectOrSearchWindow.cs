@@ -114,7 +114,7 @@ namespace Unifred.Feature
 				_SelectAssets(result_list);
 			}
 
-			EditorApplication.ExecuteMenuItem("Window/Project");
+			EditorApplication.ExecuteMenuItem("Window/General/Project");
 		    EditorUtility.FocusProjectWindow();
 			_SaveHistory("AssetOrSearch", word);
 		}
